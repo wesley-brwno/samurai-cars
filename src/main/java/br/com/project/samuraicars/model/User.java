@@ -1,7 +1,9 @@
 package br.com.project.samuraicars.model;
 
+import br.com.project.samuraicars.DTO.user.UserPostRequestBody;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
@@ -10,6 +12,7 @@ import java.util.List;
 @Table(name = "system_users")
 @Getter
 @Setter
+@NoArgsConstructor
 public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -19,6 +22,12 @@ public class User extends BaseEntity {
     private String password;
     @OneToMany(mappedBy = "user")
     private List<Vehicle> vehicles;
+
+    public User(UserPostRequestBody data) {
+        this.name = data.name();
+        this.email = data.email();
+        this.password = data.password();
+    }
 
 //    TODO: implement interface UserDetails to configure Authorization and Authentication
 }
