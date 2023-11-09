@@ -1,9 +1,9 @@
-package br.com.project.samuraicars.DTO.user;
+package br.com.project.samuraicars.DTO.authentication;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public record UserPostRequestBody(
+public record UserRegisterPostRequestBody(
         @NotBlank
         String name,
         @Email
