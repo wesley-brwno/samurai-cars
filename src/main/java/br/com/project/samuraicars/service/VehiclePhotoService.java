@@ -6,6 +6,7 @@ import br.com.project.samuraicars.model.VehiclePhoto;
 import br.com.project.samuraicars.repositoy.VehiclePhotoRepository;
 import br.com.project.samuraicars.repositoy.VehicleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,25 +22,28 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class VehiclePhotoService {
     private final VehiclePhotoRepository photoRepository;
     private final VehicleRepository vehicleRepository;
+    private final UserService userService;
 
-    public void save(List<MultipartFile> photos, Long vehicleId) {
+    public void save(List<MultipartFile> photos, Long vehicleId, UserDetails userDetails) {
         Vehicle vehicle = findVehicleById(vehicleId);
-        AtomicInteger i = new AtomicInteger();
-        photos.stream()
-                .limit(5 - checkImageQuantityByVehicle(vehicle))
-                .forEach((photo) -> {
-                    try {
-                        byte[] photoBytes = photo.getBytes();
-                        Blob photoBlob = new SerialBlob(photoBytes);
-                        VehiclePhoto vehiclePhoto = new VehiclePhoto("image-" + i.getAndIncrement(), photoBlob, vehicle);
-                        System.err.println(vehiclePhoto);
-                        photoRepository.save(vehiclePhoto);
+        if (userService.isUserOwnerOfResource(userDetails, vehicle) || userService.isUserAdmin(userDetails)) {
+            AtomicInteger i = new AtomicInteger();
+            photos.stream()
+                    .limit(5 - checkImageQuantityByVehicle(vehicle))
+                    .forEach((photo) -> {
+                        try {
+                            byte[] photoBytes = photo.getBytes();
+                            Blob photoBlob = new SerialBlob(photoBytes);
+                            VehiclePhoto vehiclePhoto = new VehiclePhoto("image-" + i.getAndIncrement(), photoBlob, vehicle);
+                            System.err.println(vehiclePhoto);
+                            photoRepository.save(vehiclePhoto);
 
-                    } catch (SQLException | IOException e) {
-                        e.printStackTrace();
-                        throw new RuntimeException(e);
-                    }
-                });
+                        } catch (SQLException | IOException e) {
+                            e.printStackTrace();
+                            throw new RuntimeException(e);
+                        }
+                    });
+        }
     }
 
     public byte[] findById(Long id) {
@@ -66,6 +70,6 @@ public class VehiclePhotoService {
         if (vehicle.getPhotos().size() <= 5) {
             return vehicle.getPhotos().size();
         }
-        throw new BadRequestException("Cannot insert more than five images");
+        throw new BadRequestException("Cannot insert more than five photos");
     }
 }

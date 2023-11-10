@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Samurai's cars</title>
+</head>
+<body>
+    <h1>Add Vehicle</h1>
+    <p>Token JWT: <span th:text="${tokenJWT}" id="tokenJWT"></span></p>
+
+    <form method="post">
+        <label for="name">Nome:</label>
+        <input type="text" id="name" name="name" />
+
+        <label for="model">Modelo:</label>
+        <input type="text" id="model"  name="model"/>
+
+        <label for="year">Ano:</label>
+        <input type="number" id="year" name="year"/>
+
+<!--        <label for="image1">Imagem 1:</label>-->
+<!--        <input type="image" id="image1" alt="vehicle photo"/>-->
+
+        <button type="submit" onclick="sendRequest()">Enviar</button>
+    </form>
+
+    <script>
+        function sendRequest() {
+            const token = document.getElementById('tokenJWT').textContent;
+            const headers = {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            };
+
+            fetch("/vehicles/new", {
+                method: "POST",
+                headers,
+                body: JSON.stringify({
+                    name: "BYD",
+                    model: "xyz",
+                    year: 2022
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Process the response data here
+                });
+        }
+    </script>
+</body>
+</html>

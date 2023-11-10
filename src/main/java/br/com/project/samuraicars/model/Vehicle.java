@@ -1,8 +1,11 @@
 package br.com.project.samuraicars.model;
 
+import br.com.project.samuraicars.DTO.vehicle.VehiclePostRequestBody;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 
@@ -10,6 +13,7 @@ import java.util.List;
 @Table(name = "vehicles")
 @Getter
 @Setter
+@NoArgsConstructor
 public class Vehicle extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -22,5 +26,12 @@ public class Vehicle extends BaseEntity{
     private User user;
 
     @OneToMany(mappedBy = "vehicle")
-    private List<VehichlePhoto> photos;
+    private List<VehiclePhoto> photos;
+
+    public Vehicle(VehiclePostRequestBody vehiclePostRequestBody, UserDetails user) {
+        this.name = vehiclePostRequestBody.name();
+        this.modelo = vehiclePostRequestBody.model();
+        this.year = vehiclePostRequestBody.year();
+        this.user = (User) user;
+    }
 }
