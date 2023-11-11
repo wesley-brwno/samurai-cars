@@ -56,13 +56,20 @@ public class VehiclePhotoService {
         }
     }
 
-    private Vehicle findVehicleById(Long id) {
-        return vehicleRepository.findById(id).orElseThrow(() -> new BadRequestException("Bad Request"));
-    }
-
     public List<String> getImagesPathByVehicleId(Long vehicleId) {
         List<Long> photosId = vehicleRepository.findAllByVehicleId(vehicleId);
         return photosId.stream().map(id -> "/photos/" + id).toList();
+    }
+    public void delete(Long id, UserDetails userDetails) {
+        VehiclePhoto vehiclePhoto = photoRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("The photo was not found"));
+        if (userService.isUserOwnerOfResource(userDetails, vehiclePhoto.getVehicle())
+                || userService.isUserAdmin(userDetails)) {
+            photoRepository.delete(vehiclePhoto);
+        }
+    }
+    private Vehicle findVehicleById(Long id) {
+        return vehicleRepository.findById(id).orElseThrow(() -> new BadRequestException("Bad Request"));
     }
 
     //todo: isolate this validation
@@ -72,4 +79,6 @@ public class VehiclePhotoService {
         }
         throw new BadRequestException("Cannot insert more than five photos");
     }
+
+
 }
