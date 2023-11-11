@@ -61,9 +61,9 @@ public class VehiclePhotoService {
 
     public List<String> getImagesPathByVehicleId(Long vehicleId, UriComponentsBuilder uriComponentsBuilder) {
         List<Long> photosId = vehicleRepository.findAllByVehicleId(vehicleId);
-        String uriString = uriComponentsBuilder.path("/photos/id").build().toUri().toString();
+        String uriString = uriComponentsBuilder.toUriString();
         return photosId.stream()
-                .map(id -> uriString.replace("/id", "/" + id)).toList();
+                .map(id -> uriString + "/photos/" + id).toList();
     }
 
     public void delete(Long id, UserDetails userDetails) {
