@@ -1,9 +1,6 @@
 package br.com.project.samuraicars.controller;
 
 import br.com.project.samuraicars.service.VehiclePhotoService;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -46,8 +43,8 @@ public class PhotoController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<String>> getImagesByVehicleId(@RequestParam Long vehicle_id) {
-        List<String> imagesByVehicleId = vehiclePhotoService.getImagesPathByVehicleId(vehicle_id);
-        return ResponseEntity.ok().body(imagesByVehicleId);
+    public ResponseEntity<List<String>> getImagesByVehicleId(@RequestParam Long vehicle_id, UriComponentsBuilder uriBuilder) {
+        List<String> imagesPathByVehicleId = vehiclePhotoService.getImagesPathByVehicleId(vehicle_id, uriBuilder);
+        return ResponseEntity.ok().body(imagesPathByVehicleId);
     }
 }

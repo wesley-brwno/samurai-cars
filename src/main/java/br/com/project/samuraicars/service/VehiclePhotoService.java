@@ -9,11 +9,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.sql.rowset.serial.SerialBlob;
 import java.io.IOException;
+import java.net.URI;
 import java.sql.Blob;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -56,10 +59,13 @@ public class VehiclePhotoService {
         }
     }
 
-    public List<String> getImagesPathByVehicleId(Long vehicleId) {
+    public List<String> getImagesPathByVehicleId(Long vehicleId, UriComponentsBuilder uriComponentsBuilder) {
         List<Long> photosId = vehicleRepository.findAllByVehicleId(vehicleId);
-        return photosId.stream().map(id -> "/photos/" + id).toList();
+        String uriString = uriComponentsBuilder.path("/photos/id").build().toUri().toString();
+        return photosId.stream()
+                .map(id -> uriString.replace("/id", "/" + id)).toList();
     }
+
     public void delete(Long id, UserDetails userDetails) {
         VehiclePhoto vehiclePhoto = photoRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("The photo was not found"));
@@ -68,6 +74,7 @@ public class VehiclePhotoService {
             photoRepository.delete(vehiclePhoto);
         }
     }
+
     private Vehicle findVehicleById(Long id) {
         return vehicleRepository.findById(id).orElseThrow(() -> new BadRequestException("Bad Request"));
     }

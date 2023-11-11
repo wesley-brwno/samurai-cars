@@ -34,13 +34,13 @@ public class VehicleController {
     private final VehiclePhotoService photoService;
 
     @GetMapping
-    public ModelAndView displayVehicles() {
+    public ModelAndView displayVehicles(UriComponentsBuilder uriBuilder) {
         ModelAndView index = new ModelAndView("index");
         List<VehicleGetResponseBody> vehicles = vehicleService.listAll();
         List<VehicleDetailsGetResponseBody> vehicleDetails = vehicles.stream()
                 .map(vehicle ->
                         new VehicleDetailsGetResponseBody(vehicle,
-                                new PhotosGetResponseBody(photoService.getImagesPathByVehicleId(vehicle.id()))))
+                                new PhotosGetResponseBody(photoService.getImagesPathByVehicleId(vehicle.id(), uriBuilder))))
                 .toList();
         index.addObject("vehicles", vehicleDetails);
         return index;
@@ -67,19 +67,19 @@ public class VehicleController {
 
     @GetMapping("/all")
     public ResponseEntity<Page<VehicleDetailsGetResponseBody>> displayAll(
-            @PageableDefault(sort = "createdAt") Pageable pageable) {
+            @PageableDefault(sort = "createdAt") Pageable pageable, UriComponentsBuilder uriBuilder) {
         Page<VehicleGetResponseBody> vehicles = vehicleService.listAll(pageable);
         Page<VehicleDetailsGetResponseBody> vehicleDetailsPage = vehicles
                 .map(vehicle -> new VehicleDetailsGetResponseBody(vehicle,
-                        new PhotosGetResponseBody(photoService.getImagesPathByVehicleId(vehicle.id())))
+                        new PhotosGetResponseBody(photoService.getImagesPathByVehicleId(vehicle.id(), uriBuilder)))
                 );
         return ResponseEntity.ok().body(vehicleDetailsPage);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<VehicleDetailsGetResponseBody> displayById(@PathVariable Long id) {
+    public ResponseEntity<VehicleDetailsGetResponseBody> displayById(@PathVariable Long id, UriComponentsBuilder uriBuilder) {
         VehicleGetResponseBody vehicle = vehicleService.listById(id);
-        PhotosGetResponseBody images = new PhotosGetResponseBody(photoService.getImagesPathByVehicleId(vehicle.id()));
+        PhotosGetResponseBody images = new PhotosGetResponseBody(photoService.getImagesPathByVehicleId(vehicle.id(), uriBuilder));
         return ResponseEntity.ok().body(new VehicleDetailsGetResponseBody(vehicle, images));
     }
 
