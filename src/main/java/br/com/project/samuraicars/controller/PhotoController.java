@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,8 +29,14 @@ public class PhotoController {
                                   UriComponentsBuilder uriBuilder,
                                   @AuthenticationPrincipal UserDetails userDetails) {
         vehiclePhotoService.save(photos, vehicleId, userDetails);
-        URI uri = uriBuilder.path("/photos?vehicle={vehicle_id}").buildAndExpand(vehicleId).toUri();
+        URI uri = uriBuilder.path("/photos").queryParam("vehicle_id", vehicleId).build().toUri();
         return ResponseEntity.created(uri).build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+        vehiclePhotoService.delete(id, userDetails);
+        return ResponseEntity.status(HttpStatus.GONE).build();
     }
 
     @GetMapping("/{id}")
