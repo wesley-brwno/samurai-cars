@@ -28,7 +28,7 @@ public class PhotoController {
                                   UriComponentsBuilder uriBuilder,
                                   @AuthenticationPrincipal UserDetails userDetails) {
         vehiclePhotoService.save(photos, vehicleId, userDetails);
-        URI uri = uriBuilder.path("/photos/{vehicle_id}").buildAndExpand(vehicleId).toUri();
+        URI uri = uriBuilder.path("/photos?vehicle={vehicle_id}").buildAndExpand(vehicleId).toUri();
         return ResponseEntity.created(uri).build();
     }
 
