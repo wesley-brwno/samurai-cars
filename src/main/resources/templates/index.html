@@ -14,7 +14,7 @@
             <li th:text="${vehicle.vehicle().year()}"></li>
         </ul>
         <div th:each="photo : ${vehicle.images().photos()}">
-            <img th:attr="src=@{'http://localhost:8080' + ${photo}}"/>
+            <img th:attr="src=@{${photo}}"/>
         </div>
     </section>
 </body>
