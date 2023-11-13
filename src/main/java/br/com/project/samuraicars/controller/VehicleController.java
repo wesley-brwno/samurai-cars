@@ -1,11 +1,13 @@
 package br.com.project.samuraicars.controller;
 
 import br.com.project.samuraicars.DTO.photo.PhotosGetResponseBody;
+import br.com.project.samuraicars.DTO.user.VehiclesByUserGetResponseBody;
 import br.com.project.samuraicars.DTO.vehicle.VehicleDetailsGetResponseBody;
 import br.com.project.samuraicars.DTO.vehicle.VehicleGetResponseBody;
 import br.com.project.samuraicars.DTO.vehicle.VehiclePostRequestBody;
 import br.com.project.samuraicars.DTO.vehicle.VehiclePutRequestBody;
 import br.com.project.samuraicars.repositoy.UserRepository;
+import br.com.project.samuraicars.service.UserService;
 import br.com.project.samuraicars.service.VehiclePhotoService;
 import br.com.project.samuraicars.service.VehicleService;
 import jakarta.validation.Valid;
@@ -32,8 +34,9 @@ public class VehicleController {
     private final UserRepository userRepository;
     private final VehicleService vehicleService;
     private final VehiclePhotoService photoService;
+    private final UserService userService;
 
-    @GetMapping
+    @GetMapping("/demo")
     public ModelAndView displayVehicles(UriComponentsBuilder uriBuilder) {
         ModelAndView index = new ModelAndView("index");
         List<VehicleGetResponseBody> vehicles = vehicleService.listAll();
@@ -81,6 +84,11 @@ public class VehicleController {
         VehicleGetResponseBody vehicle = vehicleService.listById(id);
         PhotosGetResponseBody images = new PhotosGetResponseBody(photoService.getImagesPathByVehicleId(vehicle.id(), uriBuilder));
         return ResponseEntity.ok().body(new VehicleDetailsGetResponseBody(vehicle, images));
+    }
+
+    @GetMapping()
+    public ResponseEntity<VehiclesByUserGetResponseBody> displayByUser(@RequestParam(name = "user_id") Long userId) {
+        return ResponseEntity.ok().body(userService.findVehiclesByUser(userId));
     }
 
     @PutMapping()
