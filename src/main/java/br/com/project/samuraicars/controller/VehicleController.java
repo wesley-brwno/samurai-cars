@@ -36,18 +36,7 @@ public class VehicleController {
     private final VehiclePhotoService photoService;
     private final UserService userService;
 
-    @GetMapping("/demo")
-    public ModelAndView displayVehicles(UriComponentsBuilder uriBuilder) {
-        ModelAndView index = new ModelAndView("index");
-        List<VehicleGetResponseBody> vehicles = vehicleService.listAll();
-        List<VehicleDetailsGetResponseBody> vehicleDetails = vehicles.stream()
-                .map(vehicle ->
-                        new VehicleDetailsGetResponseBody(vehicle,
-                                new PhotosGetResponseBody(photoService.getImagesPathByVehicleId(vehicle.id(), uriBuilder))))
-                .toList();
-        index.addObject("vehicles", vehicleDetails);
-        return index;
-    }
+
 
     @PostMapping("/add")
     public ResponseEntity<VehicleGetResponseBody> addVehicle(
