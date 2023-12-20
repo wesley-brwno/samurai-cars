@@ -78,6 +78,7 @@ public class VehicleService {
             vehicle.setName(requestBody.name());
             vehicle.setModelo(requestBody.model());
             vehicle.setYear(requestBody.year());
+            vehicleRepository.save(vehicle);
         }
         return vehicle;
     }

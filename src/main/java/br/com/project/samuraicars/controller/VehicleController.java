@@ -36,8 +36,6 @@ public class VehicleController {
     private final VehiclePhotoService photoService;
     private final UserService userService;
 
-
-
     @PostMapping("/add")
     public ResponseEntity<VehicleGetResponseBody> addVehicle(
             @Valid @RequestBody VehiclePostRequestBody vehicleRequest,
