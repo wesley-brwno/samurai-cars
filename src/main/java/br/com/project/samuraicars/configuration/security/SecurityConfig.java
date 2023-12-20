@@ -4,6 +4,7 @@ import br.com.project.samuraicars.repositoy.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -31,9 +32,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/", "/home", "/auth/**", "/vehicles/**", "/login/**").permitAll()
+                        .requestMatchers("/static/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "*/**").permitAll()
                         .anyRequest().permitAll()
                 )
                 .authenticationProvider(authenticationProvider())
