@@ -25,7 +25,7 @@ public class Vehicle extends BaseEntity{
     @JoinColumn(name = "sys-user-id")
     private User user;
 
-    @OneToMany(mappedBy = "vehicle")
+    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<VehiclePhoto> photos;
 
     public Vehicle(VehiclePostRequestBody vehiclePostRequestBody, UserDetails user) {
