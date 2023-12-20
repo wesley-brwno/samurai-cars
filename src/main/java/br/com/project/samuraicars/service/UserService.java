@@ -25,6 +25,10 @@ public class UserService {
         return userRepository.findById(userId).orElseThrow(() -> new BadRequestException("User not found"));
     }
 
+    public User findUserByEmail(String email) {
+        return userRepository.findUserByEmail(email).orElseThrow(() -> new BadRequestException("User not found"));
+    }
+
     public VehiclesByUserGetResponseBody findVehiclesByUser(Long userId) {
         User user = findById(userId);
         List<VehicleGetResponseBody> vehicles = user.getVehicles().stream().map(vehicle ->
