@@ -47,4 +47,10 @@ public class PhotoController {
         List<String> imagesPathByVehicleId = vehiclePhotoService.getImagesPathByVehicleId(vehicle_id, uriBuilder);
         return ResponseEntity.ok().body(imagesPathByVehicleId);
     }
+
+    @PutMapping("/{photo_id}")
+    public ResponseEntity<Void> replace(@PathVariable("photo_id") Long photoId, @RequestParam MultipartFile photo) {
+        vehiclePhotoService.replace(photoId, photo);
+        return ResponseEntity.noContent().build();
+    }
 }
