@@ -1,7 +1,6 @@
 package br.com.project.samuraicars.controller;
 
 import br.com.project.samuraicars.DTO.photo.PhotosGetResponseBody;
-import br.com.project.samuraicars.DTO.user.VehiclesByUserGetResponseBody;
 import br.com.project.samuraicars.DTO.vehicle.VehicleDetailsGetResponseBody;
 import br.com.project.samuraicars.DTO.vehicle.VehicleGetResponseBody;
 import br.com.project.samuraicars.DTO.vehicle.VehiclePostRequestBody;
@@ -20,7 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -74,8 +72,13 @@ public class VehicleController {
     }
 
     @GetMapping()
-    public ResponseEntity<VehiclesByUserGetResponseBody> displayByUser(@RequestParam(name = "user_id") Long userId) {
-        return ResponseEntity.ok().body(userService.findVehiclesByUser(userId));
+    public ResponseEntity<List<VehicleDetailsGetResponseBody>> displayByUser(@RequestParam(name = "user_id") Long userId,
+                                                                             UriComponentsBuilder uriBuilder) {
+        List<VehicleGetResponseBody> vehiclesByUser = vehicleService.findVehiclesByUser(userService.findById(userId));
+        List<VehicleDetailsGetResponseBody> vehiclesDetailsByUser = vehiclesByUser
+                .stream().map(vehicle -> new VehicleDetailsGetResponseBody(vehicle,
+                        new PhotosGetResponseBody(photoService.getImagesPathByVehicleId(vehicle.id(), uriBuilder)))).toList();
+        return ResponseEntity.ok().body(vehiclesDetailsByUser);
     }
 
     @PutMapping()

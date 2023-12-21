@@ -4,6 +4,7 @@ import br.com.project.samuraicars.DTO.vehicle.VehicleGetResponseBody;
 import br.com.project.samuraicars.DTO.vehicle.VehiclePostRequestBody;
 import br.com.project.samuraicars.DTO.vehicle.VehiclePutRequestBody;
 import br.com.project.samuraicars.exception.BadRequestException;
+import br.com.project.samuraicars.model.User;
 import br.com.project.samuraicars.model.Vehicle;
 import br.com.project.samuraicars.repositoy.VehicleRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.List;
 public class VehicleService {
     private final VehicleRepository vehicleRepository;
     private final UserService userService;
+
     public List<VehicleGetResponseBody> listAll() {
         List<Vehicle> vehicles = vehicleRepository.findAll();
         return vehicles.stream()
@@ -82,6 +84,18 @@ public class VehicleService {
         }
         return vehicle;
     }
+
+    public List<VehicleGetResponseBody> findVehiclesByUser(User user) {
+        List<Vehicle> vehiclesByUser = vehicleRepository.findAllByUser(user);
+        return vehiclesByUser.stream().map(vehicle -> new VehicleGetResponseBody(
+                vehicle.getCreatedAt(),
+                vehicle.getId(),
+                vehicle.getName(),
+                vehicle.getModelo(),
+                vehicle.getYear(),
+                vehicle.getUser().getId())).toList();
+    }
+
 
     private Vehicle findById(Long vehicleId) {
         return vehicleRepository.findById(vehicleId).orElseThrow(() -> new BadRequestException("Vehicle not found!"));
