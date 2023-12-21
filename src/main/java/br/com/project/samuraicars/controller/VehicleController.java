@@ -1,13 +1,12 @@
 package br.com.project.samuraicars.controller;
 
-import br.com.project.samuraicars.DTO.photo.PhotosGetResponseBody;
 import br.com.project.samuraicars.DTO.vehicle.VehicleDetailsGetResponseBody;
 import br.com.project.samuraicars.DTO.vehicle.VehicleGetResponseBody;
 import br.com.project.samuraicars.DTO.vehicle.VehiclePostRequestBody;
 import br.com.project.samuraicars.DTO.vehicle.VehiclePutRequestBody;
-import br.com.project.samuraicars.repositoy.UserRepository;
+import br.com.project.samuraicars.model.User;
+import br.com.project.samuraicars.model.Vehicle;
 import br.com.project.samuraicars.service.UserService;
-import br.com.project.samuraicars.service.VehiclePhotoService;
 import br.com.project.samuraicars.service.VehicleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -29,22 +28,16 @@ import java.util.List;
 @RequestMapping("/vehicles")
 @RequiredArgsConstructor
 public class VehicleController {
-    private final UserRepository userRepository;
     private final VehicleService vehicleService;
-    private final VehiclePhotoService photoService;
     private final UserService userService;
 
     @PostMapping("/add")
     public ResponseEntity<VehicleGetResponseBody> addVehicle(
-            @Valid @RequestBody VehiclePostRequestBody vehicleRequest,
-            Authentication authentication,
-            UriComponentsBuilder uriComponentsBuilder
-    ) {
-        UserDetails user = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        Long vehicleId = vehicleService.save(vehicleRequest, user);
-        URI uri = uriComponentsBuilder.path("/vehicle/{vehicle_id}").buildAndExpand(vehicleId).toUri();
-        return ResponseEntity.created(uri).body(vehicleService.listById(vehicleId));
+            @Valid @RequestBody VehiclePostRequestBody vehicleRequest, @AuthenticationPrincipal UserDetails user,
+            UriComponentsBuilder uriComponentsBuilder) {
+        Vehicle vehicle = vehicleService.save(vehicleRequest, user);
+        URI uri = uriComponentsBuilder.path("/vehicle/{vehicle_id}").buildAndExpand(vehicle.getId()).toUri();
+        return ResponseEntity.created(uri).body(new VehicleGetResponseBody(vehicle));
     }
 
     @DeleteMapping()
@@ -56,29 +49,19 @@ public class VehicleController {
     @GetMapping("/all")
     public ResponseEntity<Page<VehicleDetailsGetResponseBody>> displayAll(
             @PageableDefault(sort = "createdAt") Pageable pageable, UriComponentsBuilder uriBuilder) {
-        Page<VehicleGetResponseBody> vehicles = vehicleService.listAll(pageable);
-        Page<VehicleDetailsGetResponseBody> vehicleDetailsPage = vehicles
-                .map(vehicle -> new VehicleDetailsGetResponseBody(vehicle,
-                        new PhotosGetResponseBody(photoService.getImagesPathByVehicleId(vehicle.id(), uriBuilder)))
-                );
-        return ResponseEntity.ok().body(vehicleDetailsPage);
+        return ResponseEntity.ok().body(vehicleService.listAll(pageable, uriBuilder));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<VehicleDetailsGetResponseBody> displayById(@PathVariable Long id, UriComponentsBuilder uriBuilder) {
-        VehicleGetResponseBody vehicle = vehicleService.listById(id);
-        PhotosGetResponseBody images = new PhotosGetResponseBody(photoService.getImagesPathByVehicleId(vehicle.id(), uriBuilder));
-        return ResponseEntity.ok().body(new VehicleDetailsGetResponseBody(vehicle, images));
+        return ResponseEntity.ok().body(vehicleService.listById(id, uriBuilder));
     }
 
     @GetMapping()
-    public ResponseEntity<List<VehicleDetailsGetResponseBody>> displayByUser(@RequestParam(name = "user_id") Long userId,
-                                                                             UriComponentsBuilder uriBuilder) {
-        List<VehicleGetResponseBody> vehiclesByUser = vehicleService.findVehiclesByUser(userService.findById(userId));
-        List<VehicleDetailsGetResponseBody> vehiclesDetailsByUser = vehiclesByUser
-                .stream().map(vehicle -> new VehicleDetailsGetResponseBody(vehicle,
-                        new PhotosGetResponseBody(photoService.getImagesPathByVehicleId(vehicle.id(), uriBuilder)))).toList();
-        return ResponseEntity.ok().body(vehiclesDetailsByUser);
+    public ResponseEntity<List<VehicleDetailsGetResponseBody>> displayByUser(
+            @RequestParam(name = "user_id") Long userId, UriComponentsBuilder uriBuilder) {
+        User user = userService.findById(userId);
+        return ResponseEntity.ok().body(vehicleService.listAllByUser(user, uriBuilder));
     }
 
     @PutMapping()

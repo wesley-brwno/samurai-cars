@@ -12,15 +12,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.sql.rowset.serial.SerialBlob;
-import javax.sql.rowset.serial.SerialException;
 import java.io.IOException;
-import java.io.Serial;
-import java.net.URI;
 import java.sql.Blob;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -62,11 +57,9 @@ public class VehiclePhotoService {
         }
     }
 
-    public List<String> getImagesPathByVehicleId(Long vehicleId, UriComponentsBuilder uriComponentsBuilder) {
-        List<Long> photosId = vehicleRepository.findAllByVehicleId(vehicleId);
+    public List<String> getPhotosUrlByVehicleId(List<Long> photoIds, UriComponentsBuilder uriComponentsBuilder) {
         String uriString = uriComponentsBuilder.toUriString();
-        return photosId.stream()
-                .map(id -> uriString + "/photos/" + id).toList();
+        return photoIds.stream().map(id -> uriString + "/photos/" + id).toList();
     }
 
     public void delete(Long id, UserDetails userDetails) {

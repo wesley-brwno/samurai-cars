@@ -42,12 +42,6 @@ public class PhotoController {
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
     }
 
-    @GetMapping()
-    public ResponseEntity<List<String>> getImagesByVehicleId(@RequestParam Long vehicle_id, UriComponentsBuilder uriBuilder) {
-        List<String> imagesPathByVehicleId = vehiclePhotoService.getImagesPathByVehicleId(vehicle_id, uriBuilder);
-        return ResponseEntity.ok().body(imagesPathByVehicleId);
-    }
-
     @PutMapping("/{photo_id}")
     public ResponseEntity<Void> replace(@PathVariable("photo_id") Long photoId, @RequestParam MultipartFile photo) {
         vehiclePhotoService.replace(photoId, photo);

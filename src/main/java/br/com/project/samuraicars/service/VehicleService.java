@@ -1,11 +1,14 @@
 package br.com.project.samuraicars.service;
 
+import br.com.project.samuraicars.DTO.photo.PhotosGetResponseBody;
+import br.com.project.samuraicars.DTO.vehicle.VehicleDetailsGetResponseBody;
 import br.com.project.samuraicars.DTO.vehicle.VehicleGetResponseBody;
 import br.com.project.samuraicars.DTO.vehicle.VehiclePostRequestBody;
 import br.com.project.samuraicars.DTO.vehicle.VehiclePutRequestBody;
 import br.com.project.samuraicars.exception.BadRequestException;
 import br.com.project.samuraicars.model.User;
 import br.com.project.samuraicars.model.Vehicle;
+import br.com.project.samuraicars.model.VehiclePhoto;
 import br.com.project.samuraicars.repositoy.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,56 +16,53 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class VehicleService {
+    private final VehiclePhotoService vehiclePhotoService;
     private final VehicleRepository vehicleRepository;
     private final UserService userService;
 
-    public List<VehicleGetResponseBody> listAll() {
-        List<Vehicle> vehicles = vehicleRepository.findAll();
-        return vehicles.stream()
-                .map(vehicle -> new VehicleGetResponseBody(
-                        vehicle.getCreatedAt(),
-                        vehicle.getId(),
-                        vehicle.getName(),
-                        vehicle.getModelo(),
-                        vehicle.getYear(),
-                        vehicle.getUser().getId()))
-                .toList();
-    }
-
-    public Page<VehicleGetResponseBody> listAll(Pageable pageable) {
-        Page<Vehicle> vehiclesPage = vehicleRepository.findAll(pageable);
-        return vehiclesPage.map(vehicle -> new VehicleGetResponseBody(
-                vehicle.getCreatedAt(),
-                vehicle.getId(),
-                vehicle.getName(),
-                vehicle.getModelo(),
-                vehicle.getYear(),
-                vehicle.getUser().getId())
-        );
-    }
-
-    public VehicleGetResponseBody listById(Long vehicleId) {
+    public VehicleDetailsGetResponseBody listById(Long vehicleId, UriComponentsBuilder uriBuilder) {
         Vehicle vehicle = findById(vehicleId);
-        return new VehicleGetResponseBody(
-                vehicle.getCreatedAt(),
-                vehicle.getId(),
-                vehicle.getName(),
-                vehicle.getModelo(),
-                vehicle.getYear(),
-                vehicle.getUser().getId()
+        return new VehicleDetailsGetResponseBody(new VehicleGetResponseBody(vehicle),
+                new PhotosGetResponseBody(vehiclePhotoService.getPhotosUrlByVehicleId(
+                        getVehiclePhotosId(vehicle.getPhotos()), uriBuilder)
+                )
         );
+    }
+
+    public Page<VehicleDetailsGetResponseBody> listAll(Pageable pageable, UriComponentsBuilder uriBuilder) {
+        Page<Vehicle> vehiclesPage = vehicleRepository.findAll(pageable);
+        return vehiclesPage.map(vehicle -> new VehicleDetailsGetResponseBody(new VehicleGetResponseBody(vehicle),
+                new PhotosGetResponseBody(vehiclePhotoService.getPhotosUrlByVehicleId(getVehiclePhotosId(vehicle.getPhotos()), uriBuilder)))
+        );
+    }
+
+    public List<VehicleDetailsGetResponseBody> listAllByUser(User user, UriComponentsBuilder uriBuilder) {
+        List<Vehicle> vehicles = vehicleRepository.findAllByUser(user);
+        List<VehicleDetailsGetResponseBody> detailedVehicleBody = new ArrayList<>();
+
+        for (Vehicle vehicle : vehicles) {
+            VehicleGetResponseBody vehicleGetResponseBody = new VehicleGetResponseBody(vehicle);
+            detailedVehicleBody.add(new VehicleDetailsGetResponseBody(vehicleGetResponseBody,
+                            new PhotosGetResponseBody(vehiclePhotoService.getPhotosUrlByVehicleId(
+                                    getVehiclePhotosId(vehicle.getPhotos()), uriBuilder))
+                    )
+            );
+        }
+        return detailedVehicleBody;
     }
 
     @Transactional
-    public Long save(VehiclePostRequestBody vehicleRequest, UserDetails user) {
+    public Vehicle save(VehiclePostRequestBody vehicleRequest, UserDetails user) {
         Vehicle vehicle = new Vehicle(vehicleRequest, user);
-        return vehicleRepository.save(vehicle).getId();
+        return vehicleRepository.save(vehicle);
     }
 
     public void delete(Long vehicleId, String userEmail) {
@@ -85,19 +85,11 @@ public class VehicleService {
         return vehicle;
     }
 
-    public List<VehicleGetResponseBody> findVehiclesByUser(User user) {
-        List<Vehicle> vehiclesByUser = vehicleRepository.findAllByUser(user);
-        return vehiclesByUser.stream().map(vehicle -> new VehicleGetResponseBody(
-                vehicle.getCreatedAt(),
-                vehicle.getId(),
-                vehicle.getName(),
-                vehicle.getModelo(),
-                vehicle.getYear(),
-                vehicle.getUser().getId())).toList();
-    }
-
-
     private Vehicle findById(Long vehicleId) {
         return vehicleRepository.findById(vehicleId).orElseThrow(() -> new BadRequestException("Vehicle not found!"));
+    }
+
+    private List<Long> getVehiclePhotosId(List<VehiclePhoto> photosList) {
+        return photosList.stream().map(VehiclePhoto::getId).toList();
     }
 }
