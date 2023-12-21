@@ -1,7 +1,5 @@
 package br.com.project.samuraicars.service;
 
-import br.com.project.samuraicars.DTO.user.VehiclesByUserGetResponseBody;
-import br.com.project.samuraicars.DTO.vehicle.VehicleGetResponseBody;
 import br.com.project.samuraicars.exception.BadRequestException;
 import br.com.project.samuraicars.model.User;
 import br.com.project.samuraicars.model.Vehicle;
@@ -9,8 +7,6 @@ import br.com.project.samuraicars.repositoy.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,19 +23,6 @@ public class UserService {
 
     public User findUserByEmail(String email) {
         return userRepository.findUserByEmail(email).orElseThrow(() -> new BadRequestException("User not found"));
-    }
-
-    public VehiclesByUserGetResponseBody findVehiclesByUser(Long userId) {
-        User user = findById(userId);
-        List<VehicleGetResponseBody> vehicles = user.getVehicles().stream().map(vehicle ->
-                        new VehicleGetResponseBody(vehicle.getCreatedAt(),
-                                vehicle.getId(),
-                                vehicle.getName(),
-                                vehicle.getModelo(),
-                                vehicle.getYear(),
-                                vehicle.getUser().getId()))
-                .toList();
-        return new VehiclesByUserGetResponseBody(user.getId(), user.getName(), vehicles);
     }
 
     public boolean isUserAdmin(UserDetails userDetails) {
