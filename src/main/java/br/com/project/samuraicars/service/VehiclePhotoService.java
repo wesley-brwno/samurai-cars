@@ -12,12 +12,15 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialException;
 import java.io.IOException;
+import java.io.Serial;
 import java.net.URI;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -72,6 +75,20 @@ public class VehiclePhotoService {
         if (userService.isUserOwnerOfResource(userDetails, vehiclePhoto.getVehicle())
                 || userService.isUserAdmin(userDetails)) {
             photoRepository.delete(vehiclePhoto);
+        }
+    }
+
+    public void replace(Long photoId, MultipartFile photo) {
+        try {
+            byte[] photoBytes = photo.getBytes();
+            Blob photoBlob = new SerialBlob(photoBytes);
+            VehiclePhoto vehiclePhoto = photoRepository.findById(photoId)
+                    .orElseThrow(() -> new BadRequestException("Bad Request image not found"));
+            vehiclePhoto.setImage(photoBlob);
+            photoRepository.save(vehiclePhoto);
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
