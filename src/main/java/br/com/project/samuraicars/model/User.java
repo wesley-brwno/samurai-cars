@@ -27,6 +27,8 @@ public class User extends BaseEntity implements UserDetails {
     private String authorities;
     @OneToMany(mappedBy = "user")
     private List<Vehicle> vehicles;
+    @OneToMany(mappedBy = "user")
+    private List<ContactMessage> contactMessage;
 
     public User(String encode, UserRegisterPostRequestBody user) {
         this.name = user.name();
