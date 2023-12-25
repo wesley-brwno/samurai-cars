@@ -85,7 +85,7 @@ public class VehicleService {
         return vehicle;
     }
 
-    private Vehicle findById(Long vehicleId) {
+    public Vehicle findById(Long vehicleId) {
         return vehicleRepository.findById(vehicleId).orElseThrow(() -> new BadRequestException("Vehicle not found!"));
     }
 
