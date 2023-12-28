@@ -16,8 +16,10 @@ public class ContactMessage extends BaseEntity {
     private String name;
     private String lastname;
     private String email;
+    private String phone;
     private String message;
     private boolean isRead;
+    private Long vehicleId;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
