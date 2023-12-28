@@ -18,7 +18,6 @@ public class WeConfig {
                         .allowedOrigins("http://localhost:4200")
                         .allowedHeaders(
                                 HttpHeaders.CONTENT_TYPE,
-                                "X-CSRF-TOKEN",
                                 HttpHeaders.AUTHORIZATION,
                                 HttpHeaders.ORIGIN,
                                 HttpHeaders.CONTENT_TYPE)
