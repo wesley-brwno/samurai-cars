@@ -10,9 +10,10 @@ public record ContactMessageRequestBody(
         @NotBlank()
         @Size(min = 2, max = 20)
         String lastname,
-        @Pattern(regexp = "\\d{10}", message = "Invalid phone number")
+        @Pattern(regexp = "\\d{11}", message = "Invalid phone number")
         String phone,
         @Email()
+        @NotBlank()
         String email,
         @NotBlank()
         @Size(min = 10, max = 500)
