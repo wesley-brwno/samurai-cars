@@ -1,6 +1,7 @@
 package br.com.project.samuraicars.controller;
 
 import br.com.project.samuraicars.service.VehiclePhotoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,7 +22,7 @@ public class PhotoController {
     private final VehiclePhotoService vehiclePhotoService;
 
     @PostMapping
-    public ResponseEntity<?> save(@RequestParam List<MultipartFile> photos,
+    public ResponseEntity<?> save(@RequestPart("photos") List<MultipartFile> photos,
                                   @RequestParam Long vehicleId,
                                   UriComponentsBuilder uriBuilder,
                                   @AuthenticationPrincipal UserDetails userDetails) {
