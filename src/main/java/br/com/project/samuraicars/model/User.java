@@ -15,7 +15,9 @@ import java.util.List;
 @Table(name = "_users")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(of = "id", callSuper = true)
 public class User extends BaseEntity implements UserDetails {
     @Id
