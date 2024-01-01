@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -41,8 +40,9 @@ public class VehicleController {
     }
 
     @DeleteMapping()
-    public ResponseEntity<Void> delete(@RequestParam(name = "vehicle_id") Long vehicleId, Authentication authentication) {
-        vehicleService.delete(vehicleId, authentication.getName());
+    public ResponseEntity<Void> delete(@RequestParam(name = "vehicle_id") Long vehicleId,
+                                       @AuthenticationPrincipal UserDetails userDetails) {
+        vehicleService.delete(vehicleId, userDetails);
         return ResponseEntity.noContent().build();
     }
 
@@ -65,8 +65,9 @@ public class VehicleController {
     }
 
     @PutMapping()
-    public ResponseEntity<Void> replace(@Valid @RequestBody VehiclePutRequestBody requestBody, Authentication authentication) {
-        vehicleService.replace(requestBody, authentication.getName());
+    public ResponseEntity<Void> replace(@Valid @RequestBody VehiclePutRequestBody requestBody,
+                                        @AuthenticationPrincipal UserDetails userDetails) {
+        vehicleService.replace(requestBody, userDetails);
         return ResponseEntity.noContent().build();
     }
 }

@@ -65,22 +65,24 @@ public class VehicleService {
         return vehicleRepository.save(vehicle);
     }
 
-    public void delete(Long vehicleId, String userEmail) {
-        UserDetails userDetails = userService.findByEmail(userEmail);
+    public void delete(Long vehicleId, UserDetails userDetails) {
         Vehicle vehicle = findById(vehicleId);
         if (userService.isUserOwnerOfResource(userDetails, vehicle) || userService.isUserAdmin(userDetails)) {
             vehicleRepository.delete(vehicle);
+        } else {
+            throw new BadRequestException("The user is not authorized to perform this operation check their permissions.");
         }
     }
 
-    public Vehicle replace(VehiclePutRequestBody requestBody, String email) {
-        UserDetails userDetails = userService.findByEmail(email);
+    public Vehicle replace(VehiclePutRequestBody requestBody, UserDetails userDetails) {
         Vehicle vehicle = findById(requestBody.id());
-        if (userService.isUserOwnerOfResource(userDetails, vehicle)) {
+        if (userService.isUserOwnerOfResource(userDetails, vehicle) || userService.isUserAdmin(userDetails)) {
             vehicle.setName(requestBody.name());
             vehicle.setModelo(requestBody.model());
             vehicle.setYear(requestBody.year());
             vehicleRepository.save(vehicle);
+        } else {
+            throw new BadRequestException("The user is not authorized to perform this operation check their permissions.");
         }
         return vehicle;
     }
