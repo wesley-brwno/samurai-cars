@@ -27,7 +27,7 @@ public record VehicleGetResponseBody(
         }
 
         public VehicleGetResponseBody(Vehicle vehicle) {
-                this(vehicle.getCreatedAt(), vehicle.getId(), vehicle.getName(), vehicle.getModelo(), vehicle.getYear(), vehicle.getUser().getId());
+                this(vehicle.getCreatedAt(), vehicle.getId(), vehicle.getName(), vehicle.getModel(), vehicle.getYear(), vehicle.getUser().getId());
         }
 
 

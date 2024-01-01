@@ -78,7 +78,7 @@ public class VehicleService {
         Vehicle vehicle = findById(requestBody.id());
         if (userService.isUserOwnerOfResource(userDetails, vehicle) || userService.isUserAdmin(userDetails)) {
             vehicle.setName(requestBody.name());
-            vehicle.setModelo(requestBody.model());
+            vehicle.setModel(requestBody.model());
             vehicle.setYear(requestBody.year());
             vehicleRepository.save(vehicle);
         } else {

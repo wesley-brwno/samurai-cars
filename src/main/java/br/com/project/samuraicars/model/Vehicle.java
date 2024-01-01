@@ -19,7 +19,8 @@ public class Vehicle extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
-    private String modelo;
+    private String model;
+    @Column(name = "vehicleYear")
     private Long year;
     @ManyToOne
     @JoinColumn(name = "sys-user-id")
@@ -30,7 +31,7 @@ public class Vehicle extends BaseEntity{
 
     public Vehicle(VehiclePostRequestBody vehiclePostRequestBody, UserDetails user) {
         this.name = vehiclePostRequestBody.name();
-        this.modelo = vehiclePostRequestBody.model();
+        this.model = vehiclePostRequestBody.model();
         this.year = vehiclePostRequestBody.year();
         this.user = (User) user;
     }
