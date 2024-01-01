@@ -26,16 +26,12 @@ public class UserService {
     }
 
     public boolean isUserAdmin(UserDetails userDetails) {
-        if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-            return true;
-        }
-        throw new BadRequestException("The user is not authorized to perform this operation.");
+        System.out.println(userDetails.getAuthorities());
+
+        return userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"));
     }
 
     public boolean isUserOwnerOfResource(UserDetails userDetails, Vehicle vehicle) {
-        if (vehicle.getUser().equals(userDetails)) {
-            return true;
-        }
-        throw new BadRequestException("The user is not authorized to perform this operation because the resource does not belong to them.");
+        return vehicle.getUser().equals(userDetails);
     }
 }
