@@ -1,11 +1,7 @@
 package br.com.project.samuraicars.model;
 
-import br.com.project.samuraicars.DTO.vehicle.VehiclePostRequestBody;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.security.core.userdetails.UserDetails;
+import lombok.*;
 
 import java.util.List;
 
@@ -13,6 +9,8 @@ import java.util.List;
 @Table(name = "vehicles")
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class Vehicle extends BaseEntity{
     @Id
@@ -22,17 +20,14 @@ public class Vehicle extends BaseEntity{
     private String model;
     @Column(name = "vehicleYear")
     private Long year;
+    private String vehicleType;
+    private String brand;
+    private Double price;
     @ManyToOne
-    @JoinColumn(name = "sys-user-id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<VehiclePhoto> photos;
 
-    public Vehicle(VehiclePostRequestBody vehiclePostRequestBody, UserDetails user) {
-        this.name = vehiclePostRequestBody.name();
-        this.model = vehiclePostRequestBody.model();
-        this.year = vehiclePostRequestBody.year();
-        this.user = (User) user;
-    }
 }
