@@ -1,5 +1,6 @@
 package br.com.project.samuraicars.DTO.vehicle;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 
 public record VehiclePutRequestBody(
@@ -15,6 +16,16 @@ public record VehiclePutRequestBody(
         @NotNull()
         @Digits(integer = 4, fraction = 0)
         @Positive()
-        Long year
+        Long year,
+        @JsonProperty("vehicle_type")
+        @NotBlank()
+        @Size(min = 2, max = 100)
+        String vehicleType,
+        @NotBlank()
+        @Size(min = 2, max = 100)
+        String brand,
+        @NotNull()
+        @Positive()
+        Double price
 ) {
 }
