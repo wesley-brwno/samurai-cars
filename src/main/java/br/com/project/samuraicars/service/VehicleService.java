@@ -61,7 +61,15 @@ public class VehicleService {
 
     @Transactional
     public Vehicle save(VehiclePostRequestBody vehicleRequest, UserDetails user) {
-        Vehicle vehicle = new Vehicle(vehicleRequest, user);
+        Vehicle vehicle = Vehicle.builder()
+                .name(vehicleRequest.name())
+                .model(vehicleRequest.model())
+                .year(vehicleRequest.year())
+                .vehicleType(vehicleRequest.vehicleType())
+                .brand(vehicleRequest.brand())
+                .price(vehicleRequest.price())
+                .user((User) user)
+                .build();
         return vehicleRepository.save(vehicle);
     }
 
@@ -80,6 +88,9 @@ public class VehicleService {
             vehicle.setName(requestBody.name());
             vehicle.setModel(requestBody.model());
             vehicle.setYear(requestBody.year());
+            vehicle.setVehicleType(requestBody.vehicleType());
+            vehicle.setBrand(requestBody.brand());
+            vehicle.setPrice(requestBody.price());
             vehicleRepository.save(vehicle);
         } else {
             throw new BadRequestException("The user is not authorized to perform this operation check their permissions.");
