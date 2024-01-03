@@ -1,4 +1,4 @@
-FROM ubuntu:latest AS builder
+FROM ubuntu:latest AS build
 
 LABEL maintainer="Wesley Bruno" version="0.0.1-SNAPSHOT"
 
