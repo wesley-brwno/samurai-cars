@@ -4,6 +4,8 @@ import br.com.project.samuraicars.DTO.user.UserDetailsRequestBody;
 import br.com.project.samuraicars.DTO.user.UserPublicDetailsRequestBody;
 import br.com.project.samuraicars.model.User;
 import br.com.project.samuraicars.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @GetMapping()
     public ResponseEntity<UserDetailsRequestBody> getUserByAuthorizationHeader(
             @AuthenticationPrincipal UserDetails userDetails) {

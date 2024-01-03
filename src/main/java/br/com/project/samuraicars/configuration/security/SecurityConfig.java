@@ -35,11 +35,18 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/", "/home", "/auth/**", "/vehicles/**", "/login/**").permitAll()
-                        .requestMatchers("/static/**").permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "*/**").permitAll()
-                        .anyRequest().permitAll()
-                )
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/messages/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/messages/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/messages/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/vehicles/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/vehicles/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/vehicles/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/vehicles/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/users").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/users/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "swagger-ui.html", "/swagger-ui/**").permitAll()
+                        .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();

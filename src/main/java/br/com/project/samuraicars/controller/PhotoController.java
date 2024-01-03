@@ -1,6 +1,8 @@
 package br.com.project.samuraicars.controller;
 
 import br.com.project.samuraicars.service.VehiclePhotoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ import java.util.List;
 public class PhotoController {
     private final VehiclePhotoService vehiclePhotoService;
 
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PostMapping
     public ResponseEntity<?> save(@RequestPart("photos") List<MultipartFile> photos,
                                   @RequestParam Long vehicleId,
@@ -31,6 +34,7 @@ public class PhotoController {
         return ResponseEntity.created(uri).build();
     }
 
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
         vehiclePhotoService.delete(id, userDetails);
@@ -43,6 +47,7 @@ public class PhotoController {
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
     }
 
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PutMapping("/{photo_id}")
     public ResponseEntity<Void> replace(@PathVariable("photo_id") Long photoId, @RequestParam MultipartFile photo) {
         vehiclePhotoService.replace(photoId, photo);

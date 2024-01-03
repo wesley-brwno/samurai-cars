@@ -8,6 +8,8 @@ import br.com.project.samuraicars.model.User;
 import br.com.project.samuraicars.model.Vehicle;
 import br.com.project.samuraicars.service.UserService;
 import br.com.project.samuraicars.service.VehicleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,6 +32,7 @@ public class VehicleController {
     private final VehicleService vehicleService;
     private final UserService userService;
 
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PostMapping("/add")
     public ResponseEntity<VehicleGetResponseBody> addVehicle(
             @Valid @RequestBody VehiclePostRequestBody vehicleRequest, @AuthenticationPrincipal UserDetails user,
@@ -39,6 +42,7 @@ public class VehicleController {
         return ResponseEntity.created(uri).body(new VehicleGetResponseBody(vehicle));
     }
 
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @DeleteMapping()
     public ResponseEntity<Void> delete(@RequestParam(name = "vehicle_id") Long vehicleId,
                                        @AuthenticationPrincipal UserDetails userDetails) {
@@ -64,6 +68,7 @@ public class VehicleController {
         return ResponseEntity.ok().body(vehicleService.listAllByUser(user, uriBuilder));
     }
 
+    @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PutMapping()
     public ResponseEntity<Void> replace(@Valid @RequestBody VehiclePutRequestBody requestBody,
                                         @AuthenticationPrincipal UserDetails userDetails) {
