@@ -1,5 +1,5 @@
 # Build stage
-FROM maven:3.8-jdk-17 AS build
+FROM ubuntu:latest AS build
 
 LABEL maintainer="Wesley Bruno" version="0.0.1-SNAPSHOT"
 
