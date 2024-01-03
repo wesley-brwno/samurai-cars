@@ -45,13 +45,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/messages/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/messages/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/vehicles/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/vehicles/all/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/vehicles/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/vehicles/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/vehicles/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/users").authenticated()
                         .requestMatchers(HttpMethod.GET, "/users/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "swagger-ui.html", "/swagger-ui/**").permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
