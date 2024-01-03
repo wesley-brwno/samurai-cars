@@ -36,6 +36,11 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "photos/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "photos/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "photos/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "photos/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "photos/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/messages/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/messages/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/messages/**").authenticated()
