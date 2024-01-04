@@ -11,9 +11,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.PostgresSQLDialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
       database: postgres
-      database-platform: org.postgresql.Driver
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
   servlet:
     multipart:
       enabled: true
