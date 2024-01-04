@@ -1,23 +1,18 @@
 # Build stage
 FROM ubuntu:latest AS build
 
-LABEL maintainer="Wesley Bruno" version="0.0.1-SNAPSHOT"
-
-WORKDIR /app
-
-COPY pom.xml .
-RUN mvn dependency:go-offline
-
+RUN apt-get update
+RUN apt-get install openjdk-17-jdk -y
 COPY . .
+
+RUN apt-get maven:3.8-jdk-17
 RUN mvn clean install
 
 # Final stage
-FROM gcr.io/distroless/java17-debian11
+FROM openjdk:17-jdk-slim-buster
 
-COPY --from=build /app/target/samurai-cars-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /target/samurai-cars-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 8080
-
-USER 1001
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
