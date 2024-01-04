@@ -1,5 +1,6 @@
 spring:
   datasource:
+    auto-commit: false
     url: ${DB_HOST}
     driver-class-name: org.postgresql.Driver
     username: ${DB_USER}
@@ -7,6 +8,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+      connection:
+        provider_disables_autocommit: true
     show-sql: true
     properties:
       hibernate:

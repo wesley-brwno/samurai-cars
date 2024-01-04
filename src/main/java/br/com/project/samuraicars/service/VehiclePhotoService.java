@@ -5,6 +5,7 @@ import br.com.project.samuraicars.model.Vehicle;
 import br.com.project.samuraicars.model.VehiclePhoto;
 import br.com.project.samuraicars.repositoy.VehiclePhotoRepository;
 import br.com.project.samuraicars.repositoy.VehicleRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class VehiclePhotoService {
     private final VehicleRepository vehicleRepository;
     private final UserService userService;
 
+    @Transactional
     public void save(List<MultipartFile> photos, Long vehicleId, UserDetails userDetails) {
         Vehicle vehicle = findVehicleById(vehicleId);
         if (userService.isUserOwnerOfResource(userDetails, vehicle) || userService.isUserAdmin(userDetails)) {
@@ -46,7 +48,7 @@ public class VehiclePhotoService {
                     });
         }
     }
-
+    @Transactional
     public byte[] findById(Long id) {
         VehiclePhoto vehiclePhoto = photoRepository.findById(id).orElseThrow(() -> new BadRequestException("Bad Request image not found"));
         Blob image = vehiclePhoto.getImage();
