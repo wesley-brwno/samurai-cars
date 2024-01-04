@@ -13,8 +13,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
-      database: mysql
-      database-platform: org.hibernate.dialect.MySQL8Dialect
+#      database: mysql
+#      database-platform: org.hibernate.dialect.MySQL8Dialect
   servlet:
     multipart:
       enabled: true
