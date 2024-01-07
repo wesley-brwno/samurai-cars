@@ -22,4 +22,3 @@ springdoc:
   swagger-ui:
     operationsSorter: alpha
     tagsSorter: alpha
-    supportedSubmitMethods: "get", "put", "post", "delete", "options", "head", "patch", "trace"
