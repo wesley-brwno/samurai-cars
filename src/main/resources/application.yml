@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: prod
+    active: container
   jpa:
     hibernate:
       ddl-auto: update
