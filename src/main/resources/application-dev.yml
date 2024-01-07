@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    auto-commit: false
+    url: jdbc:postgresql://localhost:5432/samurai_cars
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: password
