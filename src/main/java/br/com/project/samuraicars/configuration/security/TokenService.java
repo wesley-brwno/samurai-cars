@@ -22,9 +22,13 @@ public class TokenService {
                     .withIssuer("Samurai's cars")
                     .withSubject(user.getEmail())
                     .withExpiresAt(expirationDate())
+                    .withClaim("name", user.getName())
+                    .withClaim("roles", user.getAuthorities()
+                            .stream()
+                            .map(Object::toString)
+                            .toList())
                     .sign(algorithm);
         } catch (JWTCreationException exception){
-            exception.printStackTrace();
             throw new RuntimeException("Error generating JWT token");
         }
     }
@@ -38,7 +42,6 @@ public class TokenService {
                     .verify(token)
                     .getSubject();
         } catch (JWTVerificationException exception){
-            exception.printStackTrace();
             throw new RuntimeException("Expired or invalid JWT token");
         }
     }
