@@ -27,27 +27,25 @@ public class VehiclePhotoService {
     private final UserService userService;
 
     @Transactional
-    public void save(List<MultipartFile> photos, Long vehicleId, UserDetails userDetails) {
-        Vehicle vehicle = findVehicleById(vehicleId);
-        if (userService.isUserOwnerOfResource(userDetails, vehicle) || userService.isUserAdmin(userDetails)) {
-            AtomicInteger i = new AtomicInteger();
-            photos.stream()
-                    .limit(5 - checkImageQuantityByVehicle(vehicle))
-                    .forEach((photo) -> {
-                        try {
-                            byte[] photoBytes = photo.getBytes();
-                            Blob photoBlob = new SerialBlob(photoBytes);
-                            VehiclePhoto vehiclePhoto = new VehiclePhoto("image-" + i.getAndIncrement(), photoBlob, vehicle);
-                            System.err.println(vehiclePhoto);
-                            photoRepository.save(vehiclePhoto);
-
-                        } catch (SQLException | IOException e) {
-                            e.printStackTrace();
-                            throw new RuntimeException(e);
-                        }
-                    });
+    public void savePhotos(List<MultipartFile> photos, Long vehicleId, UserDetails userDetails) {
+        Vehicle vehicle = vehicleRepository.findById(vehicleId).orElseThrow(() -> new BadRequestException("Vehicle Not Found"));
+        if (!userService.isUserOwnerOfResource(userDetails, vehicle)) {
+            throw new BadRequestException("User can't add photos to this vehicle");
         }
+        AtomicInteger photoNumber = new AtomicInteger(1);
+        photos.forEach((photo) -> {
+            try {
+                byte[] photosBytes = photo.getBytes();
+                SerialBlob serialBlob = new SerialBlob(photosBytes);
+                VehiclePhoto vehiclePhoto = new VehiclePhoto(vehicle.getName() + photoNumber, serialBlob, vehicle);
+                photoNumber.getAndIncrement();
+                photoRepository.save(vehiclePhoto);
+            } catch (IOException | SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
+
     @Transactional
     public byte[] findById(Long id) {
         VehiclePhoto vehiclePhoto = photoRepository.findById(id).orElseThrow(() -> new BadRequestException("Bad Request image not found"));
@@ -82,22 +80,7 @@ public class VehiclePhotoService {
             vehiclePhoto.setImage(photoBlob);
             photoRepository.save(vehiclePhoto);
         } catch (IOException | SQLException e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
-
-    private Vehicle findVehicleById(Long id) {
-        return vehicleRepository.findById(id).orElseThrow(() -> new BadRequestException("Bad Request"));
-    }
-
-    //todo: isolate this validation
-    private int checkImageQuantityByVehicle(Vehicle vehicle) {
-        if (vehicle.getPhotos().size() <= 5) {
-            return vehicle.getPhotos().size();
-        }
-        throw new BadRequestException("Cannot insert more than five photos");
-    }
-
-
 }
