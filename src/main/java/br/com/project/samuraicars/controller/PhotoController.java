@@ -3,6 +3,9 @@ package br.com.project.samuraicars.controller;
 import br.com.project.samuraicars.service.VehiclePhotoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,15 +27,13 @@ public class PhotoController {
 
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PostMapping
-    public ResponseEntity<?> save(@RequestPart("photos") List<MultipartFile> photos,
+    public ResponseEntity<?> save(@RequestPart("photos") @Valid @NotNull @Size(min = 1, max = 5) List<MultipartFile> photos,
                                   @RequestParam Long vehicleId,
-                                  UriComponentsBuilder uriBuilder,
-                                  @AuthenticationPrincipal UserDetails userDetails) {
-        vehiclePhotoService.save(photos, vehicleId, userDetails);
+                                  @AuthenticationPrincipal UserDetails userDetails, UriComponentsBuilder uriBuilder) {
+        vehiclePhotoService.savePhotos(photos, vehicleId, userDetails);
         URI uri = uriBuilder.path("/photos").queryParam("vehicle_id", vehicleId).build().toUri();
         return ResponseEntity.created(uri).build();
     }
-
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
