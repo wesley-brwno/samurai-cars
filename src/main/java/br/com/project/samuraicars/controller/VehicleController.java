@@ -7,10 +7,17 @@ import br.com.project.samuraicars.DTO.vehicle.VehiclePutRequestBody;
 import br.com.project.samuraicars.model.User;
 import br.com.project.samuraicars.model.Vehicle;
 import br.com.project.samuraicars.service.UserService;
+import br.com.project.samuraicars.service.VehiclePhotoService;
 import br.com.project.samuraicars.service.VehicleService;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -33,10 +41,10 @@ public class VehicleController {
     private final UserService userService;
 
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
-    @PostMapping("/add")
-    public ResponseEntity<VehicleGetResponseBody> addVehicle(
-            @Valid @RequestBody VehiclePostRequestBody vehicleRequest, @AuthenticationPrincipal UserDetails user,
-            UriComponentsBuilder uriComponentsBuilder) {
+    @PostMapping()
+    public ResponseEntity<VehicleGetResponseBody> save(
+            @Valid @RequestBody VehiclePostRequestBody vehicleRequest,
+            @AuthenticationPrincipal UserDetails user, UriComponentsBuilder uriComponentsBuilder) {
         Vehicle vehicle = vehicleService.save(vehicleRequest, user);
         URI uri = uriComponentsBuilder.path("/vehicle/{vehicle_id}").buildAndExpand(vehicle.getId()).toUri();
         return ResponseEntity.created(uri).body(new VehicleGetResponseBody(vehicle));
@@ -50,7 +58,7 @@ public class VehicleController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/all")
+    @GetMapping()
     public ResponseEntity<Page<VehicleDetailsGetResponseBody>> displayAll(
             @PageableDefault(sort = "createdAt") Pageable pageable, UriComponentsBuilder uriBuilder) {
         return ResponseEntity.ok().body(vehicleService.listAll(pageable, uriBuilder));
@@ -61,7 +69,7 @@ public class VehicleController {
         return ResponseEntity.ok().body(vehicleService.listById(id, uriBuilder));
     }
 
-    @GetMapping()
+    @GetMapping(params = {"user_id"})
     public ResponseEntity<List<VehicleDetailsGetResponseBody>> displayByUser(
             @RequestParam(name = "user_id") Long userId, UriComponentsBuilder uriBuilder) {
         User user = userService.findById(userId);
