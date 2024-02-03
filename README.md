@@ -10,28 +10,16 @@ Com ela, vendedores podem cadastrar seus veículos, e compradores podem encontr�
 - O Swagger pode ser visualizado em [https://samurai-cars.onrender.com/swagger-ui/index.html#/](https://samurai-cars.onrender.com/swagger-ui/index.html#/).
 
 ### Execução com Docker
-- Baixe a image :
+- Baixe a imagem :
 ```
 docker pull brwnus/samurai_cars:1.0 
 ```
-- Execute a image
+- Execute a imagem
 ```
 docker run -p 8080:8080 brwnus/samurai_cars:1.0
 ```
 - A API pode ser acessada em [localhost:8080](http://localhost:8080).
 - O Swagger pode ser visualizado em [localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html).
-
-## Práticas Adotadas
-- API REST
-- Validação de dados com anotações do Spring validations e Hibernate
-- Consultas com Spring Data JPA
-- Tratamento de respostas de erro
-- Autenticação e autorização com Spring Security e JWT
-- Proteção de endpoints e recursos
-- Gestão de usuários e permições
-- Geração automática do Swagger com a OpenAPI 3
-- Docker
-- Intregração do Back-end com o Front-end
 
 ## Instruções para fazer login
 
@@ -49,3 +37,15 @@ docker run -p 8080:8080 brwnus/samurai_cars:1.0
   "password": "xaropinhoUser"
 }
 ``` 
+
+## Práticas Adotadas
+- API REST
+- Validação de dados com anotações do Spring validations e Hibernate
+- Consultas com Spring Data JPA
+- Tratamento de respostas de erro
+- Autenticação e autorização com Spring Security e JWT
+- Proteção de endpoints e recursos
+- Gestão de usuários e permições
+- Geração automática do Swagger com a OpenAPI 3
+- Docker
+- Intregração do Back-end com o Front-end
