@@ -30,33 +30,17 @@ public class VehicleService {
 
     public VehicleDetailsGetResponseBody listById(Long vehicleId, UriComponentsBuilder uriBuilder) {
         Vehicle vehicle = findById(vehicleId);
-        return new VehicleDetailsGetResponseBody(new VehicleGetResponseBody(vehicle),
-                new PhotosGetResponseBody(vehiclePhotoService.getPhotosUrlByVehicleId(
-                        getVehiclePhotosId(vehicle.getPhotos()), uriBuilder)
-                )
-        );
+        return mapVehicleToVehicleDetailsGetResponseBody(vehicle, uriBuilder);
     }
 
     public Page<VehicleDetailsGetResponseBody> listAll(Pageable pageable, UriComponentsBuilder uriBuilder) {
         Page<Vehicle> vehiclesPage = vehicleRepository.findAll(pageable);
-        return vehiclesPage.map(vehicle -> new VehicleDetailsGetResponseBody(new VehicleGetResponseBody(vehicle),
-                new PhotosGetResponseBody(vehiclePhotoService.getPhotosUrlByVehicleId(getVehiclePhotosId(vehicle.getPhotos()), uriBuilder)))
-        );
+        return vehiclesPage.map(vehicle -> mapVehicleToVehicleDetailsGetResponseBody(vehicle, uriBuilder) );
     }
 
     public List<VehicleDetailsGetResponseBody> listAllByUser(User user, UriComponentsBuilder uriBuilder) {
         List<Vehicle> vehicles = vehicleRepository.findAllByUser(user);
-        List<VehicleDetailsGetResponseBody> detailedVehicleBody = new ArrayList<>();
-
-        for (Vehicle vehicle : vehicles) {
-            VehicleGetResponseBody vehicleGetResponseBody = new VehicleGetResponseBody(vehicle);
-            detailedVehicleBody.add(new VehicleDetailsGetResponseBody(vehicleGetResponseBody,
-                            new PhotosGetResponseBody(vehiclePhotoService.getPhotosUrlByVehicleId(
-                                    getVehiclePhotosId(vehicle.getPhotos()), uriBuilder))
-                    )
-            );
-        }
-        return detailedVehicleBody;
+        return vehicles.stream().map(vehicle -> mapVehicleToVehicleDetailsGetResponseBody(vehicle, uriBuilder)).toList();
     }
 
     @Transactional
@@ -104,5 +88,10 @@ public class VehicleService {
 
     private List<Long> getVehiclePhotosId(List<VehiclePhoto> photosList) {
         return photosList.stream().map(VehiclePhoto::getId).toList();
+    }
+
+    private VehicleDetailsGetResponseBody mapVehicleToVehicleDetailsGetResponseBody(Vehicle vehicle, UriComponentsBuilder uriBuilder) {
+        List<String> photoUrls = vehiclePhotoService.getPhotosUrlByVehicleId(getVehiclePhotosId(vehicle.getPhotos()), uriBuilder);
+        return new VehicleDetailsGetResponseBody(new VehicleGetResponseBody(vehicle), new PhotosGetResponseBody(photoUrls));
     }
 }
