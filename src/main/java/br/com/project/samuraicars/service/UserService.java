@@ -30,7 +30,6 @@ public class UserService {
     }
 
     public boolean isUserOwnerOfResource(UserDetails userDetails, Vehicle vehicle) {
-        System.err.println(vehicle.getUser().equals(userDetails));
         return vehicle.getUser().equals(userDetails);
     }
 }
