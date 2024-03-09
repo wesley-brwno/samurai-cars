@@ -26,8 +26,6 @@ public class UserService {
     }
 
     public boolean isUserAdmin(UserDetails userDetails) {
-        System.out.println(userDetails.getAuthorities());
-
         return userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"));
     }
 
