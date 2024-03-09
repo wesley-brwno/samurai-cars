@@ -70,9 +70,9 @@ public class VehicleController {
 
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PutMapping()
-    public ResponseEntity<Void> replace(@Valid @RequestBody VehiclePutRequestBody requestBody,
-                                        @AuthenticationPrincipal UserDetails userDetails) {
-        vehicleService.replace(requestBody, userDetails);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<VehicleGetResponseBody> replace(@Valid @RequestBody VehiclePutRequestBody requestBody,
+                                                          @AuthenticationPrincipal UserDetails userDetails) {
+        Vehicle vehicle = vehicleService.replace(requestBody, userDetails);
+        return ResponseEntity.ok(new VehicleGetResponseBody(vehicle));
     }
 }
