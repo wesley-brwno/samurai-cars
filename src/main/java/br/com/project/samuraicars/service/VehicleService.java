@@ -35,7 +35,7 @@ public class VehicleService {
 
     public Page<VehicleDetailsGetResponseBody> listAll(Pageable pageable, UriComponentsBuilder uriBuilder) {
         Page<Vehicle> vehiclesPage = vehicleRepository.findAll(pageable);
-        return vehiclesPage.map(vehicle -> mapVehicleToVehicleDetailsGetResponseBody(vehicle, uriBuilder) );
+        return vehiclesPage.map(vehicle -> mapVehicleToVehicleDetailsGetResponseBody(vehicle, uriBuilder));
     }
 
     public List<VehicleDetailsGetResponseBody> listAllByUser(User user, UriComponentsBuilder uriBuilder) {
@@ -45,16 +45,7 @@ public class VehicleService {
 
     @Transactional
     public Vehicle save(VehiclePostRequestBody vehicleRequest, UserDetails user) {
-        Vehicle vehicle = Vehicle.builder()
-                .name(vehicleRequest.name())
-                .model(vehicleRequest.model())
-                .year(vehicleRequest.year())
-                .vehicleType(vehicleRequest.vehicleType())
-                .brand(vehicleRequest.brand())
-                .price(vehicleRequest.price())
-                .user((User) user)
-                .build();
-        return vehicleRepository.save(vehicle);
+        return vehicleRepository.save(mapVehiclePostRequestBodyToVehicle(vehicleRequest, (User) user));
     }
 
     public void delete(Long vehicleId, UserDetails userDetails) {
@@ -93,5 +84,17 @@ public class VehicleService {
     private VehicleDetailsGetResponseBody mapVehicleToVehicleDetailsGetResponseBody(Vehicle vehicle, UriComponentsBuilder uriBuilder) {
         List<String> photoUrls = vehiclePhotoService.getPhotosUrlByVehicleId(getVehiclePhotosId(vehicle.getPhotos()), uriBuilder);
         return new VehicleDetailsGetResponseBody(new VehicleGetResponseBody(vehicle), new PhotosGetResponseBody(photoUrls));
+    }
+
+    private Vehicle mapVehiclePostRequestBodyToVehicle(VehiclePostRequestBody vehicleRequest, User user) {
+        return Vehicle.builder()
+                .name(vehicleRequest.name())
+                .model(vehicleRequest.model())
+                .year(vehicleRequest.year())
+                .vehicleType(vehicleRequest.vehicleType())
+                .brand(vehicleRequest.brand())
+                .price(vehicleRequest.price())
+                .user(user)
+                .build();
     }
 }
