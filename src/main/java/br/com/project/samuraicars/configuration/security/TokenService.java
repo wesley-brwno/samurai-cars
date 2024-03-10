@@ -22,6 +22,7 @@ public class TokenService {
                     .withIssuer("Samurai's cars")
                     .withSubject(user.getEmail())
                     .withExpiresAt(expirationDate())
+                    .withClaim("id", user.getId())
                     .withClaim("name", user.getName())
                     .withClaim("roles", user.getAuthorities()
                             .stream()
