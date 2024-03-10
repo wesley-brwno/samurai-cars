@@ -1,9 +1,9 @@
 package br.com.project.samuraicars.DTO.vehicle;
 
-import br.com.project.samuraicars.DTO.photo.PhotosGetResponseBody;
+import java.util.List;
 
 public record VehicleDetailsGetResponseBody(
         VehicleGetResponseBody vehicle,
-        PhotosGetResponseBody images
+        List<String> pictures
 ) {
 }
