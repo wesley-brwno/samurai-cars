@@ -83,7 +83,7 @@ public class VehicleService {
 
     private VehicleDetailsGetResponseBody mapVehicleToVehicleDetailsGetResponseBody(Vehicle vehicle, UriComponentsBuilder uriBuilder) {
         List<String> photoUrls = vehiclePhotoService.getPhotosUrlByVehicleId(getVehiclePhotosId(vehicle.getPhotos()), uriBuilder);
-        return new VehicleDetailsGetResponseBody(new VehicleGetResponseBody(vehicle), new PhotosGetResponseBody(photoUrls));
+        return new VehicleDetailsGetResponseBody(new VehicleGetResponseBody(vehicle), photoUrls);
     }
 
     private Vehicle mapVehiclePostRequestBodyToVehicle(VehiclePostRequestBody vehicleRequest, User user) {
