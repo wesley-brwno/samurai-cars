@@ -21,10 +21,7 @@ public class ContactMessageService {
     private final VehicleService vehicleService;
 
     public ContactMessage save(ContactMessageRequestBody messageBody) {
-        Vehicle vehicle = vehicleService.findById(messageBody.vehicleId());
-        User user = userService.findById(vehicle.getUser().getId());
-        return contactMessageRepository.save(new ContactMessage(null, messageBody.name(), messageBody.lastname(), messageBody.email(),
-                messageBody.phone(), messageBody.message(), false, messageBody.vehicleId(), user));
+        return contactMessageRepository.save(mapContactMessageRequestBodyToContactMessage(messageBody));
     }
 
     public ContactMessageResponseBody getById(Long id, UserDetails user) {
@@ -66,5 +63,12 @@ public class ContactMessageService {
     private void markAsRead(ContactMessage contactMessage) {
         contactMessage.setRead(true);
         contactMessageRepository.save(contactMessage);
+    }
+
+    private ContactMessage mapContactMessageRequestBodyToContactMessage(ContactMessageRequestBody message) {
+        Vehicle vehicle = vehicleService.findById(message.vehicleId());
+        User user = userService.findById(vehicle.getUser().getId());
+        return new ContactMessage(null, message.name(), message.lastname(), message.email(), message.phone(),
+                message.message(), false, message.vehicleId(), user);
     }
 }
