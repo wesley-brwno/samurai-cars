@@ -50,7 +50,7 @@ public class VehicleController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping()
+    @GetMapping("/all")
     public ResponseEntity<Page<VehicleDetailsGetResponseBody>> displayAll(
             @PageableDefault(sort = "createdAt") Pageable pageable, UriComponentsBuilder uriBuilder) {
         return ResponseEntity.ok().body(vehicleService.listAll(pageable, uriBuilder));
