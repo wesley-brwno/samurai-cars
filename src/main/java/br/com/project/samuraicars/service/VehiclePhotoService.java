@@ -4,7 +4,6 @@ import br.com.project.samuraicars.exception.BadRequestException;
 import br.com.project.samuraicars.model.Vehicle;
 import br.com.project.samuraicars.model.VehiclePhoto;
 import br.com.project.samuraicars.repositoy.VehiclePhotoRepository;
-import br.com.project.samuraicars.repositoy.VehicleRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,12 +22,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiredArgsConstructor
 public class VehiclePhotoService {
     private final VehiclePhotoRepository photoRepository;
-    private final VehicleRepository vehicleRepository;
+    private final VehicleService vehicleService;
     private final UserService userService;
 
     @Transactional
     public void savePhotos(List<MultipartFile> photos, Long vehicleId, UserDetails userDetails) {
-        Vehicle vehicle = vehicleRepository.findById(vehicleId).orElseThrow(() -> new BadRequestException("Vehicle Not Found"));
+        Vehicle vehicle = vehicleService.findById(vehicleId);
         if (!userService.isUserOwnerOfResource(userDetails, vehicle)) {
             throw new BadRequestException("User can't add photos to this vehicle");
         }
@@ -46,9 +45,8 @@ public class VehiclePhotoService {
         });
     }
 
-    public byte[] findById(Long id) {
-        VehiclePhoto vehiclePhoto = photoRepository.findById(id).orElseThrow(() -> new BadRequestException("Bad Request image not found"));
-        Blob image = vehiclePhoto.getImage();
+    public byte[] findImageById(Long id) {
+        Blob image = findById(id).getImage();
         try {
             return image.getBytes(1, (int) image.length());
         } catch (SQLException e) {
@@ -61,25 +59,28 @@ public class VehiclePhotoService {
         return photoIds.stream().map(id -> uriString + "/photos/" + id).toList();
     }
 
+    @Transactional
     public void delete(Long id, UserDetails userDetails) {
-        VehiclePhoto vehiclePhoto = photoRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("The photo was not found"));
-        if (userService.isUserOwnerOfResource(userDetails, vehiclePhoto.getVehicle())
-                || userService.isUserAdmin(userDetails)) {
+        VehiclePhoto vehiclePhoto = findById(id);
+        if (userService.isUserOwnerOfResource(userDetails, vehiclePhoto.getVehicle()) || userService.isUserAdmin(userDetails)) {
             photoRepository.delete(vehiclePhoto);
         }
     }
 
+    @Transactional
     public void replace(Long photoId, MultipartFile photo) {
         try {
             byte[] photoBytes = photo.getBytes();
             Blob photoBlob = new SerialBlob(photoBytes);
-            VehiclePhoto vehiclePhoto = photoRepository.findById(photoId)
-                    .orElseThrow(() -> new BadRequestException("Bad Request image not found"));
+            VehiclePhoto vehiclePhoto = findById(photoId);
             vehiclePhoto.setImage(photoBlob);
             photoRepository.save(vehiclePhoto);
         } catch (IOException | SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private VehiclePhoto findById(Long id) {
+        return photoRepository.findById(id).orElseThrow(() -> new BadRequestException("Bad Request image not found"));
     }
 }
