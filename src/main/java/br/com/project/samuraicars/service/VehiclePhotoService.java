@@ -46,7 +46,6 @@ public class VehiclePhotoService {
         });
     }
 
-    @Transactional
     public byte[] findById(Long id) {
         VehiclePhoto vehiclePhoto = photoRepository.findById(id).orElseThrow(() -> new BadRequestException("Bad Request image not found"));
         Blob image = vehiclePhoto.getImage();
