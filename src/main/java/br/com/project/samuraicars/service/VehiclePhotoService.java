@@ -4,6 +4,7 @@ import br.com.project.samuraicars.exception.BadRequestException;
 import br.com.project.samuraicars.model.Vehicle;
 import br.com.project.samuraicars.model.VehiclePhoto;
 import br.com.project.samuraicars.repositoy.VehiclePhotoRepository;
+import br.com.project.samuraicars.repositoy.VehicleRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,12 +23,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiredArgsConstructor
 public class VehiclePhotoService {
     private final VehiclePhotoRepository photoRepository;
-    private final VehicleService vehicleService;
+    private final VehicleRepository vehicleRepository;
     private final UserService userService;
 
     @Transactional
     public void savePhotos(List<MultipartFile> photos, Long vehicleId, UserDetails userDetails) {
-        Vehicle vehicle = vehicleService.findById(vehicleId);
+        Vehicle vehicle = findVehicleById(vehicleId);
         if (!userService.isUserOwnerOfResource(userDetails, vehicle)) {
             throw new BadRequestException("User can't add photos to this vehicle");
         }
@@ -45,6 +46,7 @@ public class VehiclePhotoService {
         });
     }
 
+    @Transactional
     public byte[] findImageById(Long id) {
         Blob image = findById(id).getImage();
         try {
@@ -54,6 +56,7 @@ public class VehiclePhotoService {
         }
     }
 
+    @Transactional
     public List<String> getPhotosUrlByVehicleId(List<Long> photoIds, UriComponentsBuilder uriComponentsBuilder) {
         String uriString = uriComponentsBuilder.toUriString();
         return photoIds.stream().map(id -> uriString + "/photos/" + id).toList();
@@ -82,5 +85,9 @@ public class VehiclePhotoService {
 
     private VehiclePhoto findById(Long id) {
         return photoRepository.findById(id).orElseThrow(() -> new BadRequestException("Bad Request image not found"));
+    }
+
+    private Vehicle findVehicleById(Long id) {
+        return vehicleRepository.findById(id).orElseThrow(() -> new BadRequestException("Vehicle not found"));
     }
 }
