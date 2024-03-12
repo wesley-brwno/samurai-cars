@@ -48,6 +48,7 @@ public class VehicleService {
         return vehicleRepository.save(mapVehiclePostRequestBodyToVehicle(vehicleRequest, (User) user));
     }
 
+    @Transactional
     public void delete(Long vehicleId, UserDetails userDetails) {
         Vehicle vehicle = findById(vehicleId);
         if (userService.isUserOwnerOfResource(userDetails, vehicle) || userService.isUserAdmin(userDetails)) {
