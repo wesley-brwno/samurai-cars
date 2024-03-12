@@ -43,7 +43,7 @@ public class PhotoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Long id) {
-        byte[] image = vehiclePhotoService.findById(id);
+        byte[] image = vehiclePhotoService.findImageById(id);
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
     }
 
