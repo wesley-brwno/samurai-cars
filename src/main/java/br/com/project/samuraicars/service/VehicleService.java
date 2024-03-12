@@ -1,6 +1,5 @@
 package br.com.project.samuraicars.service;
 
-import br.com.project.samuraicars.DTO.photo.PhotosGetResponseBody;
 import br.com.project.samuraicars.DTO.vehicle.VehicleDetailsGetResponseBody;
 import br.com.project.samuraicars.DTO.vehicle.VehicleGetResponseBody;
 import br.com.project.samuraicars.DTO.vehicle.VehiclePostRequestBody;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
