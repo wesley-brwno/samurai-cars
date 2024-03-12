@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class ContactMessageService {
     private final UserService userService;
     private final VehicleService vehicleService;
 
+    @Transactional
     public ContactMessage save(ContactMessageRequestBody messageBody) {
         return contactMessageRepository.save(mapContactMessageRequestBodyToContactMessage(messageBody));
     }
@@ -33,10 +35,7 @@ public class ContactMessageService {
         return null;
     }
 
-    private ContactMessage findById(Long id) {
-        return contactMessageRepository.findById(id).orElseThrow(() -> new BadRequestException("Message not found"));
-    }
-
+    @Transactional
     public void delete(Long id, UserDetails user) {
         ContactMessage message = findById(id);
         Vehicle vehicle = vehicleService.findById(message.getVehicleId());
@@ -52,6 +51,10 @@ public class ContactMessageService {
         return messagesPage.map(ContactMessageResponseBody::new);
     }
 
+    private ContactMessage findById(Long id) {
+        return contactMessageRepository.findById(id).orElseThrow(() -> new BadRequestException("Message not found"));
+    }
+
     private boolean isUserOwnerOfMessage(Long userId, UserDetails userDetails) {
         User user = userService.findById(userId);
         if (user.getUsername().equals(userDetails.getUsername())) {
@@ -60,6 +63,7 @@ public class ContactMessageService {
         throw new BadRequestException("Bad Request, this user can't access this message");
     }
 
+    @Transactional
     private void markAsRead(ContactMessage contactMessage) {
         contactMessage.setRead(true);
         contactMessageRepository.save(contactMessage);
