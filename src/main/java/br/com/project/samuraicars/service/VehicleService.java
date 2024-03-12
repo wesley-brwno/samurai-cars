@@ -57,20 +57,13 @@ public class VehicleService {
         }
     }
 
+    @Transactional
     public Vehicle replace(VehiclePutRequestBody requestBody, UserDetails userDetails) {
         Vehicle vehicle = findById(requestBody.id());
         if (userService.isUserOwnerOfResource(userDetails, vehicle) || userService.isUserAdmin(userDetails)) {
-            vehicle.setName(requestBody.name());
-            vehicle.setModel(requestBody.model());
-            vehicle.setYear(requestBody.year());
-            vehicle.setVehicleType(requestBody.vehicleType());
-            vehicle.setBrand(requestBody.brand());
-            vehicle.setPrice(requestBody.price());
-            vehicleRepository.save(vehicle);
-        } else {
-            throw new BadRequestException("The user is not authorized to perform this operation check their permissions.");
+            return vehicleRepository.save(mapVehiclePutRequestBodyToVehicle(requestBody, vehicle));
         }
-        return vehicle;
+        throw new BadRequestException("The user is not authorized to perform this operation check their permissions.");
     }
 
     public Vehicle findById(Long vehicleId) {
@@ -96,5 +89,15 @@ public class VehicleService {
                 .price(vehicleRequest.price())
                 .user(user)
                 .build();
+    }
+
+    private Vehicle mapVehiclePutRequestBodyToVehicle(VehiclePutRequestBody vehicleRequest, Vehicle vehicle) {
+        vehicle.setName(vehicleRequest.name());
+        vehicle.setModel(vehicleRequest.model());
+        vehicle.setYear(vehicleRequest.year());
+        vehicle.setVehicleType(vehicleRequest.vehicleType());
+        vehicle.setBrand(vehicleRequest.brand());
+        vehicle.setPrice(vehicleRequest.price());
+        return vehicle;
     }
 }
