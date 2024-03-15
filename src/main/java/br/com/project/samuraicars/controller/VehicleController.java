@@ -5,7 +5,6 @@ import br.com.project.samuraicars.DTO.vehicle.VehiclePutRequestBody;
 import br.com.project.samuraicars.DTO.vehicle.VehicleResponseBody;
 import br.com.project.samuraicars.DTO.vehicle.VehicleWithPhotosResponseBody;
 import br.com.project.samuraicars.model.User;
-import br.com.project.samuraicars.model.Vehicle;
 import br.com.project.samuraicars.service.UserService;
 import br.com.project.samuraicars.service.VehicleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +21,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 

@@ -1,9 +1,9 @@
 package br.com.project.samuraicars.service;
 
-import br.com.project.samuraicars.DTO.vehicle.VehicleWithPhotosResponseBody;
 import br.com.project.samuraicars.DTO.vehicle.VehiclePostRequestBody;
 import br.com.project.samuraicars.DTO.vehicle.VehiclePutRequestBody;
 import br.com.project.samuraicars.DTO.vehicle.VehicleResponseBody;
+import br.com.project.samuraicars.DTO.vehicle.VehicleWithPhotosResponseBody;
 import br.com.project.samuraicars.exception.BadRequestException;
 import br.com.project.samuraicars.model.User;
 import br.com.project.samuraicars.model.Vehicle;
@@ -119,6 +119,7 @@ public class VehicleServiceImpl implements VehicleService {
     private List<Long> getPhotoIds(List<VehiclePhoto> photos) {
         return photos.stream().map(VehiclePhoto::getId).toList();
     }
+
     private List<String> getPhotoUrls(List<Long> photoIds, UriComponentsBuilder uriComponentsBuilder) {
         String uriString = uriComponentsBuilder.toUriString();
         return photoIds.stream().map(id -> uriString + "/photos/" + id).toList();
