@@ -3,14 +3,10 @@ package br.com.project.samuraicars.DTO.vehicle;
 
 import br.com.project.samuraicars.model.Vehicle;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 
-public record VehicleGetResponseBody(
+public record VehicleResponseBody(
         @JsonProperty("created_at")
         LocalDateTime createdAt,
         Long id,
@@ -24,7 +20,7 @@ public record VehicleGetResponseBody(
         String brand,
         Double price
 ) {
-        public VehicleGetResponseBody(@JsonProperty("created_at")
+        public VehicleResponseBody(@JsonProperty("created_at")
                                       LocalDateTime createdAt, Long id, String name, String model, Long year, @JsonProperty("user_id")
                                       Long userId, @JsonProperty("vehicle_type")
                                       String vehicleType, String brand, Double price) {
@@ -39,7 +35,7 @@ public record VehicleGetResponseBody(
                 this.price = price;
         }
 
-        public VehicleGetResponseBody(Vehicle vehicle) {
+        public VehicleResponseBody(Vehicle vehicle) {
                 this(vehicle.getCreatedAt(), vehicle.getId(), vehicle.getName(), vehicle.getModel(), vehicle.getYear(),
                         vehicle.getUser().getId(), vehicle.getVehicleType(), vehicle.getBrand(), vehicle.getPrice());
         }
