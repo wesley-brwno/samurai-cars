@@ -2,77 +2,14 @@ package br.com.project.samuraicars.service;
 
 import br.com.project.samuraicars.DTO.contactMessage.ContactMessageRequestBody;
 import br.com.project.samuraicars.DTO.contactMessage.ContactMessageResponseBody;
-import br.com.project.samuraicars.exception.BadRequestException;
-import br.com.project.samuraicars.model.ContactMessage;
 import br.com.project.samuraicars.model.User;
-import br.com.project.samuraicars.model.Vehicle;
-import br.com.project.samuraicars.repositoy.ContactMessageRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@RequiredArgsConstructor
-public class ContactMessageService {
-    private final ContactMessageRepository contactMessageRepository;
-    private final UserService userService;
-    private final VehicleService vehicleService;
-
-    @Transactional
-    public ContactMessage save(ContactMessageRequestBody messageBody) {
-        return contactMessageRepository.save(mapContactMessageRequestBodyToContactMessage(messageBody));
-    }
-
-    public ContactMessageResponseBody getById(Long id, UserDetails user) {
-        ContactMessage message = findById(id);
-        if (isUserOwnerOfMessage(message.getUser().getId(), user)) {
-            markAsRead(message);
-            return new ContactMessageResponseBody(message);
-        }
-        return null;
-    }
-
-    @Transactional
-    public void delete(Long id, UserDetails user) {
-        ContactMessage message = findById(id);
-        Vehicle vehicle = vehicleService.findById(message.getVehicleId());
-        if (userService.isUserOwnerOfResource(user, vehicle)) {
-            contactMessageRepository.delete(message);
-            return;
-        }
-        throw new BadRequestException("Error deleting message");
-    }
-
-    public Page<ContactMessageResponseBody> findByUserPageable(Pageable pageable, UserDetails user) {
-        Page<ContactMessage> messagesPage = contactMessageRepository.findAllByUser((User) user, pageable);
-        return messagesPage.map(ContactMessageResponseBody::new);
-    }
-
-    private ContactMessage findById(Long id) {
-        return contactMessageRepository.findById(id).orElseThrow(() -> new BadRequestException("Message not found"));
-    }
-
-    private boolean isUserOwnerOfMessage(Long userId, UserDetails userDetails) {
-        User user = userService.findById(userId);
-        if (user.getUsername().equals(userDetails.getUsername())) {
-            return true;
-        }
-        throw new BadRequestException("Bad Request, this user can't access this message");
-    }
-
-    @Transactional
-    private void markAsRead(ContactMessage contactMessage) {
-        contactMessage.setRead(true);
-        contactMessageRepository.save(contactMessage);
-    }
-
-    private ContactMessage mapContactMessageRequestBodyToContactMessage(ContactMessageRequestBody message) {
-        Vehicle vehicle = vehicleService.findById(message.vehicleId());
-        User user = userService.findById(vehicle.getUser().getId());
-        return new ContactMessage(null, message.name(), message.lastname(), message.email(), message.phone(),
-                message.message(), false, message.vehicleId(), user);
-    }
+public interface ContactMessageService {
+    void save(ContactMessageRequestBody requestBody);
+    void delete(Long id, UserDetails userDetails);
+    ContactMessageResponseBody listById(Long id, UserDetails userDetails);
+    Page<ContactMessageResponseBody> findByUserPageable(Pageable pageable, User user);
 }
