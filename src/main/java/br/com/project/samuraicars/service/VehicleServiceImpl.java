@@ -76,17 +76,17 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     private VehicleResponseBody mapEntityToVehicleResponseBody(Vehicle vehicle) {
-        return new VehicleResponseBody(
-                vehicle.getCreatedAt(),
-                vehicle.getId(),
-                vehicle.getVehicleType(),
-                vehicle.getModel(),
-                vehicle.getYear(),
-                vehicle.getUser().getId(),
-                vehicle.getVehicleType(),
-                vehicle.getBrand(),
-                vehicle.getPrice()
-        );
+        return VehicleResponseBody.builder()
+                .createdAt(vehicle.getCreatedAt())
+                .id(vehicle.getId())
+                .name(vehicle.getName())
+                .brand(vehicle.getBrand())
+                .model(vehicle.getModel())
+                .vehicleType(vehicle.getVehicleType())
+                .year(vehicle.getYear())
+                .price(vehicle.getPrice())
+                .userId(vehicle.getUser().getId())
+                .build();
     }
 
     private Vehicle mapVehiclePostRequestBodyToEntity(VehiclePostRequestBody vehicleRequest, User user) {
