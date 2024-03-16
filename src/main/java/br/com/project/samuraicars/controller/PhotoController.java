@@ -14,9 +14,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -28,11 +26,9 @@ public class PhotoController {
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PostMapping
     public ResponseEntity<?> save(@RequestPart("photos") @Valid @NotNull @Size(min = 1, max = 5) List<MultipartFile> photos,
-                                  @RequestParam Long vehicleId,
-                                  @AuthenticationPrincipal UserDetails userDetails, UriComponentsBuilder uriBuilder) {
-        vehiclePhotoService.savePhotos(photos, vehicleId, userDetails);
-        URI uri = uriBuilder.path("/photos").queryParam("vehicle_id", vehicleId).build().toUri();
-        return ResponseEntity.created(uri).build();
+                                  @RequestParam Long vehicleId, @AuthenticationPrincipal UserDetails userDetails) {
+        vehiclePhotoService.save(photos, vehicleId, userDetails);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @DeleteMapping("/{id}")
