@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+
     @Override
     public User findById(Long userId) {
         return userRepository.findById(userId).orElseThrow(() -> new BadRequestException("User not found"));
@@ -23,7 +24,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-
     public boolean isUserOwnerOfResource(UserDetails userDetails, Vehicle vehicle) {
         return vehicle.getUser().equals(userDetails);
     }
