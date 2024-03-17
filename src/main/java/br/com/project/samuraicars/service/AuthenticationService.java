@@ -3,7 +3,7 @@ package br.com.project.samuraicars.service;
 import br.com.project.samuraicars.DTO.authentication.UserAuthorizationRequestBody;
 import br.com.project.samuraicars.DTO.authentication.UserRegisterPostRequestBody;
 import br.com.project.samuraicars.configuration.security.TokenService;
-import br.com.project.samuraicars.exception.EmailAlreadyExsistException;
+import br.com.project.samuraicars.exception.EmailAlreadyExistException;
 import br.com.project.samuraicars.model.User;
 import br.com.project.samuraicars.repositoy.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class AuthenticationService {
     @Transactional
     public String register(UserRegisterPostRequestBody user) {
         if (userRepository.findByEmail(user.email()).isPresent()) {
-            throw new EmailAlreadyExsistException("Email already exists");
+            throw new EmailAlreadyExistException("Email already exists");
         }
         String encode = new BCryptPasswordEncoder().encode(user.password());
         userRepository.save(new User(encode, user));
