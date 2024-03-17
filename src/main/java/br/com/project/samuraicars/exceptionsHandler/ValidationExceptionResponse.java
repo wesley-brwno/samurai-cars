@@ -11,8 +11,6 @@ public record ValidationExceptionResponse(
         String status,
         String title,
         String details,
-        @JsonProperty("developer_message")
-        String developerMessage,
         String fields,
         @JsonProperty("fields_message")
         String fieldsMessage
