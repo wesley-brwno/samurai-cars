@@ -1,6 +1,6 @@
 package br.com.project.samuraicars.exceptionsHandler;
 
-import br.com.project.samuraicars.exception.EmailAlreadyExsistException;
+import br.com.project.samuraicars.exception.EmailAlreadyExistException;
 import lombok.NonNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,9 +31,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 ValidationExceptionResponse.builder()
                         .timestamp(LocalDateTime.now())
                         .status(String.valueOf(HttpStatus.BAD_REQUEST.value()))
-                        .title("Bad Request Exception, check the documentation")
-                        .details(ex.getMessage())
-                        .developerMessage(ex.getClass().getName())
+                        .title("Invalid arguments, check the documentation!")
                         .fields(fields)
                         .fieldsMessage(fieldsMessage)
                         .build()
@@ -43,38 +41,26 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(@NonNull Exception ex, Object body, @NonNull HttpHeaders headers,
                                                              @NonNull HttpStatusCode statusCode, @NonNull WebRequest request) {
-        ExceptionResponse exceptionResponse = ExceptionResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(String.valueOf(statusCode.value()))
-                .title(ex.getCause().getMessage())
-                .details(ex.getMessage())
-                .developerMessage(ex.getClass().getName())
-                .build();
-        return ResponseEntity.status(statusCode.value()).body(exceptionResponse);
+        return ResponseEntity.status(statusCode.value()).body(createExceptionResponse(ex, HttpStatus.valueOf(statusCode.value()), ex.getCause().getMessage()));
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ExceptionResponse> handleBadCredentialsException(BadCredentialsException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(ExceptionResponse.builder()
-                        .timestamp(LocalDateTime.now())
-                        .status(HttpStatus.FORBIDDEN.name())
-                        .title("Bad Credentials, check email and password!")
-                        .details(ex.getMessage())
-                        .developerMessage(ex.getClass().getName())
-                        .build());
+                .body(createExceptionResponse(ex, HttpStatus.FORBIDDEN, "Bad Credentials, check email and password!"));
     }
 
 
-    @ExceptionHandler(EmailAlreadyExsistException.class)
-    public ResponseEntity<ExceptionResponse> handleEmailAlreadyExistException(EmailAlreadyExsistException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(ExceptionResponse.builder()
-                        .timestamp(LocalDateTime.now())
-                        .status(HttpStatus.CONFLICT.name())
-                        .title("Email Already Exist!")
-                        .details(ex.getMessage())
-                        .developerMessage(ex.getClass().getName())
-                        .build());
+    @ExceptionHandler(EmailAlreadyExistException.class)
+    public ResponseEntity<ExceptionResponse> handleEmailAlreadyExistException(EmailAlreadyExistException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(createExceptionResponse(ex, HttpStatus.CONFLICT, "Email already exist!"));
+    }
+
+    private ExceptionResponse createExceptionResponse(Exception exception, HttpStatus status, String title) {
+        return ExceptionResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(status.name())
+                .details(exception.getMessage())
+                .build();
     }
 }
