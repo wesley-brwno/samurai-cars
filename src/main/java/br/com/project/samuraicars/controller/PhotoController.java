@@ -45,8 +45,9 @@ public class PhotoController {
 
     @Operation(security = { @SecurityRequirement(name = "bearer-key") })
     @PutMapping("/{photo_id}")
-    public ResponseEntity<Void> replace(@PathVariable("photo_id") Long photoId, @RequestParam MultipartFile photo) {
-        vehiclePhotoService.replace(photoId, photo);
+    public ResponseEntity<Void> replace(@PathVariable("photo_id") Long photoId, @RequestParam MultipartFile photo,
+                                        @AuthenticationPrincipal UserDetails userDetails) {
+        vehiclePhotoService.replace(photoId, photo, userDetails);
         return ResponseEntity.noContent().build();
     }
 }

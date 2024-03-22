@@ -9,5 +9,5 @@ public interface VehiclePhotoService {
     void save(List<MultipartFile> photos, Long vehicleId, UserDetails userDetails);
     byte[] findImageById(Long id);
     void delete(Long id, UserDetails userDetails);
-    void replace(Long photoId, MultipartFile photo);
+    void replace(Long photoId, MultipartFile photo, UserDetails userDetails);
 }

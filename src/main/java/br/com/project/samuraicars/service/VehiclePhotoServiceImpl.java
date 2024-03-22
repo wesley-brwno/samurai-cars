@@ -66,25 +66,31 @@ public class VehiclePhotoServiceImpl implements VehiclePhotoService {
         VehiclePhoto vehiclePhoto = findPhotoById(id);
         if (userService.isUserOwnerOfResource(userDetails, vehiclePhoto.getVehicle()) || userService.isUserAdmin(userDetails)) {
             photoRepository.delete(vehiclePhoto);
+        } else {
+            throw new BadRequestException("The user is not authorized to perform this operation check their permissions.");
         }
     }
 
     @Override
     @Transactional
-    public void replace(Long photoId, MultipartFile photo) {
+    public void replace(Long photoId, MultipartFile photo, UserDetails userDetails) {
         try {
-            byte[] photoBytes = photo.getBytes();
-            Blob photoBlob = new SerialBlob(photoBytes);
             VehiclePhoto vehiclePhoto = findPhotoById(photoId);
-            vehiclePhoto.setImage(photoBlob);
-            photoRepository.save(vehiclePhoto);
+            if (userService.isUserOwnerOfResource(userDetails, vehiclePhoto.getVehicle()) || userService.isUserAdmin(userDetails)) {
+                byte[] photoBytes = photo.getBytes();
+                Blob photoBlob = new SerialBlob(photoBytes);
+                vehiclePhoto.setImage(photoBlob);
+                photoRepository.save(vehiclePhoto);
+            } else {
+                throw new BadRequestException("The user is not authorized to perform this operation check their permissions.");
+            }
         } catch (IOException | SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     private VehiclePhoto findPhotoById(Long id) {
-        return photoRepository.findById(id).orElseThrow(() -> new BadRequestException("Photo not found"));
+            return photoRepository.findById(id).orElseThrow(() -> new BadRequestException("Photo not found"));
     }
 
     private Vehicle findVehicleById(Long id) {
