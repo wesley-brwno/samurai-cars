@@ -38,8 +38,9 @@ public class VehicleServiceImpl implements VehicleService {
         Vehicle vehicle = findById(vehicleId);
         if (userService.isUserOwnerOfResource(userDetails, vehicle) || userService.isUserAdmin(userDetails)) {
             vehicleRepository.delete(vehicle);
+        } else {
+            throw new BadRequestException("The user is not authorized to perform this operation check their permissions.");
         }
-        throw new BadRequestException("The user is not authorized to perform this operation check their permissions.");
     }
 
     @Override
