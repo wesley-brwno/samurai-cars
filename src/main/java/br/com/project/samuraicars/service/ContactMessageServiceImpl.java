@@ -74,7 +74,7 @@ public class ContactMessageServiceImpl implements ContactMessageService {
     private ContactMessageResponseBody mapEntityToContactMessageResponseBody(ContactMessage message) {
         return new ContactMessageResponseBody(
                 message.getName(),
-                message.getName(),
+                message.getLastname(),
                 message.getPhone(),
                 message.getEmail(),
                 message.getMessage(),
