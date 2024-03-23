@@ -7,8 +7,8 @@ import br.com.project.samuraicars.DTO.vehicle.VehicleWithPhotosResponseBody;
 import br.com.project.samuraicars.exception.BadRequestException;
 import br.com.project.samuraicars.model.User;
 import br.com.project.samuraicars.model.Vehicle;
+import br.com.project.samuraicars.model.VehiclePhoto;
 import br.com.project.samuraicars.repositoy.VehicleRepository;
-import br.com.project.samuraicars.utils.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.sql.Blob;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,20 +30,30 @@ import java.util.Optional;
 class VehicleServiceTest {
 
     @Mock
-    VehicleRepository vehicleRepositoryMock;
+    public VehicleRepository vehicleRepositoryMock;
     @Mock
-    UserService userServiceMock;
+    public UserService userServiceMock;
     @InjectMocks
-    VehicleServiceImpl vehicleService;
+    public VehicleServiceImpl vehicleService;
+
+    private User validUser;
+    private Vehicle validVehicle;
+    private VehiclePostRequestBody validVehiclePostRequestBody;
+    private VehicleResponseBody validVehicleResponseBody;
+    private VehicleWithPhotosResponseBody validVehicleWithPhotosResponseBody;
 
     @BeforeEach
     public void setUp() {
-        Vehicle vehicle = VehicleCreator.createValidVehicle();
-        List<Vehicle> vehicleList = List.of(vehicle);
+        validUser = createValidUser();
+        validVehicle = createValidVehicle();
+        validVehicleResponseBody = createValidVehicleResponseBody();
+        validVehiclePostRequestBody = createValidVehiclePostRequestBody();
+        validVehicleWithPhotosResponseBody = createValidVehicleWithPhotosResponseBody();
+
+        List<Vehicle> vehicleList = List.of(validVehicle);
         Page<Vehicle> vehiclePage = new PageImpl<>(vehicleList);
 
-        BDDMockito.when(vehicleRepositoryMock.save(ArgumentMatchers.any())).thenReturn(vehicle);
-        BDDMockito.when(vehicleRepositoryMock.findById(ArgumentMatchers.anyLong())).thenReturn(Optional.of(vehicle));
+        BDDMockito.when(vehicleRepositoryMock.findById(ArgumentMatchers.anyLong())).thenReturn(Optional.of(validVehicle));
         BDDMockito.when(vehicleRepositoryMock.findAllByUser(ArgumentMatchers.any())).thenReturn(vehicleList);
         BDDMockito.when(vehicleRepositoryMock.findAll(ArgumentMatchers.any(PageRequest.class))).thenReturn(vehiclePage);
         BDDMockito.doNothing().when(vehicleRepositoryMock).delete(ArgumentMatchers.any(Vehicle.class));
@@ -51,25 +62,22 @@ class VehicleServiceTest {
     @Test
     @DisplayName("save should return VehicleResponseBody when successful")
     void save_ShouldReturnVehicleResponseBody_WhenSuccessful() {
-        VehicleResponseBody expectedVehicleResponseBody = VehicleResponseBodyCreator.createValidVehicleResponseBody();
-        VehiclePostRequestBody validVehiclePostRequestBody = VehiclePostRequestBodyCreator.createValidVehiclePostRequestBody();
-        User user = UserCreator.createValidUser();
+        BDDMockito.when(vehicleRepositoryMock.save(ArgumentMatchers.any())).thenReturn(validVehicle);
 
-        VehicleResponseBody vehicleResponseBody = vehicleService.save(validVehiclePostRequestBody, user);
+        VehicleResponseBody vehicleResponseBody = vehicleService.save(validVehiclePostRequestBody, validUser);
 
         Assertions.assertThat(vehicleResponseBody)
                 .isNotNull()
-                .isEqualTo(expectedVehicleResponseBody);
+                .isEqualTo(validVehicleResponseBody);
     }
 
     @Test
     @DisplayName("delete should remove Vehicle when successful")
     void delete_ShouldRemoveVehicle_WhenSuccessful() {
-        BDDMockito.when(userServiceMock.isUserOwnerOfResource(ArgumentMatchers.any(UserDetails.class), ArgumentMatchers.any(Vehicle.class))).thenReturn(true);
-        BDDMockito.when(userServiceMock.isUserAdmin(ArgumentMatchers.any(UserDetails.class))).thenReturn(true);
-        User user = UserCreator.createValidUser();
+        BDDMockito.doNothing().when(vehicleRepositoryMock).delete(ArgumentMatchers.any(Vehicle.class));
+        BDDMockito.when(userServiceMock.isUserOwnerOfResource(validUser, validVehicle)).thenReturn(true);
 
-        Assertions.assertThatCode(() -> vehicleService.delete(1L, user))
+        Assertions.assertThatCode(() -> vehicleService.delete(1L, validUser))
                 .doesNotThrowAnyException();
     }
 
@@ -77,10 +85,8 @@ class VehicleServiceTest {
     @DisplayName("delete should throw BadRequestException when user doesn't have permissions")
     void delete_ShouldThrowBadRequestException_WhenUserHasNoPermission() {
         BDDMockito.when(userServiceMock.isUserOwnerOfResource(ArgumentMatchers.any(UserDetails.class), ArgumentMatchers.any(Vehicle.class))).thenReturn(false);
-        BDDMockito.when(userServiceMock.isUserAdmin(ArgumentMatchers.any(UserDetails.class))).thenReturn(false);
-        User user = UserCreator.createValidUser();
 
-        Assertions.assertThatCode(() -> vehicleService.delete(1L, user))
+        Assertions.assertThatCode(() -> vehicleService.delete(1L, validUser))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("The user is not authorized to perform this operation check their permissions.");
     }
@@ -88,28 +94,27 @@ class VehicleServiceTest {
     @Test
     @DisplayName("replace should update Vehicle when successful")
     void replace_ShouldUpdateVehicle_WhenSuccessful() {
-        VehicleResponseBody expectedVehicleResponseBody = VehicleResponseBodyCreator.createUpdatedVehicleResponseBody();
-        VehiclePutRequestBody updateVehicleRequest = VehiclePutRequestBodyCreator.createValidVehiclePutRequestBody();
-        User user = UserCreator.createValidUser();
-        BDDMockito.when(userServiceMock.isUserOwnerOfResource(ArgumentMatchers.any(UserDetails.class), ArgumentMatchers.any(Vehicle.class))).thenReturn(true);
-        BDDMockito.when(userServiceMock.isUserAdmin(ArgumentMatchers.any(UserDetails.class))).thenReturn(true);
+        VehiclePutRequestBody validRequestBody = createValidVehiclePutRequestBody();
+        VehicleResponseBody expectedResponseBody = createUpdatedVehicleResponseBody();
+        BDDMockito.when(userServiceMock.isUserOwnerOfResource(validUser, validVehicle)).thenReturn(true);
+        BDDMockito.when(vehicleRepositoryMock.save(ArgumentMatchers.any(Vehicle.class))).thenReturn(validVehicle);
 
-        VehicleResponseBody vehicleResponseBody = vehicleService.replace(updateVehicleRequest, user);
+        VehicleResponseBody responseBody = vehicleService.replace(validRequestBody, validUser);
 
-        Assertions.assertThat(vehicleResponseBody)
+        Assertions.assertThat(responseBody)
                 .isNotNull()
-                .isEqualTo(expectedVehicleResponseBody);
+                .isEqualTo(expectedResponseBody);
     }
 
     @Test
     @DisplayName("replace should throw BadRequestException when user doesn't have permissions")
     void replace_ShouldThrowBadRequestException_WhenUserHasNoPermission() {
-        VehiclePutRequestBody updateVehicleRequest = VehiclePutRequestBodyCreator.createValidVehiclePutRequestBody();
-        User user = UserCreator.createValidUser();
-        BDDMockito.when(userServiceMock.isUserOwnerOfResource(ArgumentMatchers.any(UserDetails.class), ArgumentMatchers.any(Vehicle.class))).thenReturn(false);
-        BDDMockito.when(userServiceMock.isUserAdmin(ArgumentMatchers.any(UserDetails.class))).thenReturn(false);
+        VehiclePutRequestBody validRequestBody = createValidVehiclePutRequestBody();
+        User invalidUser = createInvalidUser();
+        BDDMockito.when(userServiceMock.isUserOwnerOfResource(invalidUser, validVehicle)).thenReturn(false);
+        BDDMockito.when(vehicleRepositoryMock.save(ArgumentMatchers.any(Vehicle.class))).thenReturn(validVehicle);
 
-        Assertions.assertThatCode(() -> vehicleService.replace(updateVehicleRequest, user))
+        Assertions.assertThatCode(() -> vehicleService.replace(validRequestBody, invalidUser))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("The user is not authorized to perform this operation check their permissions.");
     }
@@ -117,21 +122,30 @@ class VehicleServiceTest {
     @Test
     @DisplayName("listById should return a VehicleWithPhotosResponseBody when successful")
     void listById_ShouldReturnVehicleWithPhotosResponseBody_WhenSuccessful() {
-        VehicleWithPhotosResponseBody expectedVehicleWithPhotosResponseBody = VehicleWithPhotosResponseBodyCreator.createValidVehicleWithPhotosResponseBody();
         UriComponentsBuilder uriComponentsBuilder = Mockito.mock(UriComponentsBuilder.class);
 
         VehicleWithPhotosResponseBody vehicleWithPhotosResponseBody = vehicleService.listById(1L, uriComponentsBuilder);
 
         Assertions.assertThat(vehicleWithPhotosResponseBody)
                 .isNotNull()
-                .isEqualTo(expectedVehicleWithPhotosResponseBody);
+                .isEqualTo(validVehicleWithPhotosResponseBody);
+    }
+
+    @Test
+    @DisplayName("listById should throw BadRequestException when Vehicle is not found")
+    void listById_ShouldThrowBadRequestException_WhenVehicleIsNotFound() {
+        BDDMockito.when(vehicleRepositoryMock.findById(ArgumentMatchers.anyLong())).thenReturn(Optional.empty());
+        UriComponentsBuilder uriComponentsBuilder = Mockito.mock(UriComponentsBuilder.class);
+
+        Assertions.assertThatCode(() -> vehicleService.listById(1L, uriComponentsBuilder))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("Vehicle not found!");
     }
 
     @Test
     @DisplayName("listAll should return Page of VehicleWithPhotosResponseBody when successful")
     void listAll_ShouldReturnPageOfVehicleWithPhotosResponseBody_WhenSuccessful() {
-        VehicleWithPhotosResponseBody responseBody = VehicleWithPhotosResponseBodyCreator.createValidVehicleWithPhotosResponseBody();
-        Page<VehicleWithPhotosResponseBody> expectedResponseBodies = new PageImpl<>(List.of(responseBody));
+        Page<VehicleWithPhotosResponseBody> expectedResponseBodies = new PageImpl<>(List.of(validVehicleWithPhotosResponseBody));
         UriComponentsBuilder uriComponentsBuilder = Mockito.mock(UriComponentsBuilder.class);
         PageRequest pageable = PageRequest.of(0, 10);
 
@@ -146,16 +160,106 @@ class VehicleServiceTest {
     @Test
     @DisplayName("listByUser should return a List of VehicleWithPhotosResponseBody when successful")
     void listByUser_ShouldReturnListOfVehicleWithPhotosResponseBody_WhenSuccessful() {
-        VehicleWithPhotosResponseBody validVehicleWithPhotosResponseBody = VehicleWithPhotosResponseBodyCreator.createValidVehicleWithPhotosResponseBody();
         List<VehicleWithPhotosResponseBody> expectedVehicleWithPhotosResponseBodies = List.of(validVehicleWithPhotosResponseBody);
         UriComponentsBuilder uriComponentsBuilder = Mockito.mock(UriComponentsBuilder.class);
-        User user = UserCreator.createValidUser();
 
-        List<VehicleWithPhotosResponseBody> vehicleWithPhotosResponseBodies = vehicleService.listByUser(user, uriComponentsBuilder);
+        List<VehicleWithPhotosResponseBody> vehicleWithPhotosResponseBodies = vehicleService.listByUser(validUser, uriComponentsBuilder);
 
         Assertions.assertThat(vehicleWithPhotosResponseBodies)
                 .isNotEmpty()
                 .hasSize(1)
                 .isEqualTo(expectedVehicleWithPhotosResponseBodies);
+    }
+
+    private User createValidUser() {
+        return User.builder()
+                .id(1L)
+                .name("Tom")
+                .email("tom@email.com")
+                .authorities("USER")
+                .build();
+    }
+
+    private User createInvalidUser() {
+        return User.builder()
+                .id(2L)
+                .name("Zoro")
+                .email("zoro@email.com")
+                .authorities("USER")
+                .build();
+    }
+
+    private Vehicle createValidVehicle() {
+        VehiclePhoto vehiclePhoto = new VehiclePhoto();
+        vehiclePhoto.setId(1L);
+        vehiclePhoto.setName("vehicle_photo");
+        Blob mockBlob = Mockito.mock(Blob.class);
+        vehiclePhoto.setImage(mockBlob);
+
+        return Vehicle.builder()
+                .id(1L)
+                .name("Fusca")
+                .model("1300 GL")
+                .year(1991L)
+                .vehicleType("2 doors Fastback")
+                .brand("Volkswagen")
+                .price(5000.00)
+                .user(validUser)
+                .photos(List.of(vehiclePhoto))
+                .build();
+    }
+
+    private VehicleResponseBody createValidVehicleResponseBody() {
+        return VehicleResponseBody.builder()
+                .id(1L)
+                .userId(1L)
+                .name("Fusca")
+                .model("1300 GL")
+                .year(1991L)
+                .vehicleType("2 doors Fastback")
+                .brand("Volkswagen")
+                .price(5000.00)
+                .build();
+    }
+
+    private VehiclePostRequestBody createValidVehiclePostRequestBody() {
+        return new VehiclePostRequestBody(
+                "Fusca",
+                "1300 GL",
+                1991L,
+                "2 doors Fastback",
+                "Volkswagen",
+                5000.00
+        );
+    }
+
+    private VehiclePutRequestBody createValidVehiclePutRequestBody() {
+        return new VehiclePutRequestBody(
+                1L,
+                "Civic",
+                "EX",
+                2022L,
+                "sedan",
+                "Honda",
+                25000.00
+        );
+    }
+
+    private VehicleResponseBody createUpdatedVehicleResponseBody() {
+        return VehicleResponseBody.builder()
+                .id(1L)
+                .userId(1L)
+                .name("Civic")
+                .model("EX")
+                .year(2022L)
+                .vehicleType("sedan")
+                .brand("Honda")
+                .price(25000.00)
+                .build();
+    }
+
+    private VehicleWithPhotosResponseBody createValidVehicleWithPhotosResponseBody() {
+        List<String> photos = List.of("null/photos/1");
+        return new VehicleWithPhotosResponseBody(validVehicleResponseBody, photos);
     }
 }
