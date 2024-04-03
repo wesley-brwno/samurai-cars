@@ -4,6 +4,6 @@ import br.com.project.samuraicars.DTO.authentication.UserAuthorizationRequestBod
 import br.com.project.samuraicars.DTO.authentication.UserRegisterPostRequestBody;
 
 public interface AuthenticationService {
-    String register(UserRegisterPostRequestBody user);
+    void register(UserRegisterPostRequestBody user);
     String authorize(UserAuthorizationRequestBody user);
 }

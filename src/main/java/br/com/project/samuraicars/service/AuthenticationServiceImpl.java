@@ -25,13 +25,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     @Transactional
-    public String register(UserRegisterPostRequestBody user) {
+    public void register(UserRegisterPostRequestBody user) {
         if (userRepository.findByEmail(user.email()).isPresent()) {
-            throw new EmailAlreadyExistException("Email already exists");
+            throw new EmailAlreadyExistException("Email already exist");
         }
         String encode = new BCryptPasswordEncoder().encode(user.password());
         userRepository.save(new User(encode, user));
-        return authorize(new UserAuthorizationRequestBody(user.email(), user.password()));
     }
 
     @Override
