@@ -123,6 +123,6 @@ public class VehicleServiceImpl implements VehicleService {
 
     private List<String> getPhotoUrls(List<Long> photoIds, UriComponentsBuilder uriComponentsBuilder) {
         String uriString = uriComponentsBuilder.toUriString();
-        return photoIds.stream().map(id -> uriString + "/photos/" + id).toList();
+        return photoIds.stream().map(id -> uriString + "/photos/" + id).sorted(String::compareToIgnoreCase).toList();
     }
 }
