@@ -1,5 +1,6 @@
 package br.com.project.samuraicars.service;
 
+import br.com.project.samuraicars.DTO.user.UserResponseBody;
 import br.com.project.samuraicars.DTO.vehicle.VehiclePostRequestBody;
 import br.com.project.samuraicars.DTO.vehicle.VehiclePutRequestBody;
 import br.com.project.samuraicars.DTO.vehicle.VehicleResponseBody;
@@ -86,7 +87,7 @@ public class VehicleServiceImpl implements VehicleService {
                 .vehicleType(vehicle.getVehicleType())
                 .year(vehicle.getYear())
                 .price(vehicle.getPrice())
-                .userId(vehicle.getUser().getId())
+                .owner(new UserResponseBody(vehicle.getUser().getId(), vehicle.getUser().getName()))
                 .build();
     }
 
