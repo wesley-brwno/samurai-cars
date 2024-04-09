@@ -1,5 +1,6 @@
 package br.com.project.samuraicars.controller;
 
+import br.com.project.samuraicars.DTO.user.UserResponseBody;
 import br.com.project.samuraicars.DTO.vehicle.VehiclePostRequestBody;
 import br.com.project.samuraicars.DTO.vehicle.VehiclePutRequestBody;
 import br.com.project.samuraicars.DTO.vehicle.VehicleResponseBody;
@@ -199,7 +200,7 @@ class VehicleControllerTest {
     private VehicleResponseBody createValidVehicleResponseBody() {
         return VehicleResponseBody.builder()
                 .id(1L)
-                .userId(1L)
+                .owner(new UserResponseBody(1L, "zoro"))
                 .name("Fusca")
                 .model("1300 GL")
                 .year(1991L)
