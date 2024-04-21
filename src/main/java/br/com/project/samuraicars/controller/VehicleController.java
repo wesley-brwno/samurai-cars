@@ -86,4 +86,9 @@ public class VehicleController {
     public ResponseEntity<List<String>> listBrand() {
         return ResponseEntity.ok(vehicleService.listBrand());
     }
+
+    @GetMapping("/year")
+    public ResponseEntity<List<String>> listYear() {
+        return ResponseEntity.ok(vehicleService.listYears());
+    }
 }

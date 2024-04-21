@@ -12,4 +12,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     List<Vehicle> findAllByUser(User user);
     @Query(value = "SELECT v.brand FROM Vehicle v ORDER BY v.brand")
     List<String> findAllBrand();
+
+    @Query(value = "SELECT v.year FROM Vehicle v ORDER BY v.year")
+    List<String> findAllYears();
 }

@@ -78,6 +78,11 @@ public class VehicleServiceImpl implements VehicleService {
         return vehicleRepository.findAllBrand().stream().distinct().toList();
     }
 
+    @Override
+    public List<String> listYears() {
+        return vehicleRepository.findAllYears().stream().distinct().toList();
+    }
+
     private Vehicle findById(Long id) {
         return vehicleRepository.findById(id).orElseThrow(() -> new BadRequestException("Vehicle not found!"));
     }
