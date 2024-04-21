@@ -86,7 +86,12 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     public Page<VehicleWithPhotosResponseBody> listByBrand(String brand, Pageable pageable, UriComponentsBuilder uriBuilder) {
         Page<Vehicle> vehiclePage = vehicleRepository.findByBrandContaining(brand, pageable);
-        System.err.println(vehiclePage.isEmpty());
+        return vehiclePage.map(vehicle -> createVehicleWithPhotosResponseBody(vehicle, uriBuilder));
+    }
+
+    @Override
+    public Page<VehicleWithPhotosResponseBody> listByYear(Long year, Pageable pageable, UriComponentsBuilder uriBuilder) {
+        Page<Vehicle> vehiclePage = vehicleRepository.findByYearIs(year, pageable);
         return vehiclePage.map(vehicle -> createVehicleWithPhotosResponseBody(vehicle, uriBuilder));
     }
 

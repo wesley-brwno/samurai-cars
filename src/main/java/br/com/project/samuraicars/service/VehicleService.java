@@ -20,6 +20,7 @@ public interface VehicleService {
     Page<VehicleWithPhotosResponseBody> listAll(Pageable pageable, UriComponentsBuilder uriComponentsBuilder);
     List<VehicleWithPhotosResponseBody> listByUser(User user, UriComponentsBuilder uriComponentsBuilder);
     Page<VehicleWithPhotosResponseBody> listByBrand(String brand, Pageable pageable, UriComponentsBuilder uriComponentsBuilder);
+    Page<VehicleWithPhotosResponseBody> listByYear(Long year, Pageable pageable, UriComponentsBuilder uriComponentsBuilder);
     List<String> listBrand();
     List<String> listYears();
 }
