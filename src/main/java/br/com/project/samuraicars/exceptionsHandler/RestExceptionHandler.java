@@ -1,5 +1,6 @@
 package br.com.project.samuraicars.exceptionsHandler;
 
+import br.com.project.samuraicars.exception.BadRequestException;
 import br.com.project.samuraicars.exception.EmailAlreadyExistException;
 import lombok.NonNull;
 import org.springframework.http.HttpHeaders;
@@ -34,6 +35,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                         .title("Invalid arguments, check the documentation!")
                         .fields(fields)
                         .fieldsMessage(fieldsMessage)
+                        .details(ex.getTitleMessageCode())
                         .build()
         );
     }
@@ -56,8 +58,15 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(createExceptionResponse(ex, HttpStatus.CONFLICT, "Email already exist!"));
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ExceptionResponse> handleBadRequestException(BadRequestException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(createExceptionResponse(ex, HttpStatus.BAD_REQUEST, "Bad Request, check the documentation!"));
+    }
+
     private ExceptionResponse createExceptionResponse(Exception exception, HttpStatus status, String title) {
         return ExceptionResponse.builder()
+                .title(title)
+                .developerMessage(exception.getClass().getName())
                 .timestamp(LocalDateTime.now())
                 .status(status.name())
                 .details(exception.getMessage())
