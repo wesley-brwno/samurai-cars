@@ -81,4 +81,9 @@ public class VehicleController {
             @Valid @RequestBody VehiclePutRequestBody requestBody, @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(vehicleService.replace(requestBody, userDetails));
     }
+
+    @GetMapping("/brand")
+    public ResponseEntity<List<String>> listBrand() {
+        return ResponseEntity.ok(vehicleService.listBrand());
+    }
 }

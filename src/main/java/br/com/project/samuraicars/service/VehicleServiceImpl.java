@@ -73,6 +73,11 @@ public class VehicleServiceImpl implements VehicleService {
         return vehicles.stream().map(vehicle -> createVehicleWithPhotosResponseBody(vehicle, uriComponentsBuilder)).toList();
     }
 
+    @Override
+    public List<String> listBrand() {
+        return vehicleRepository.findAllBrand().stream().distinct().toList();
+    }
+
     private Vehicle findById(Long id) {
         return vehicleRepository.findById(id).orElseThrow(() -> new BadRequestException("Vehicle not found!"));
     }
