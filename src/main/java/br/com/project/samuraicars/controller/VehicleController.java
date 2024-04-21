@@ -91,4 +91,11 @@ public class VehicleController {
     public ResponseEntity<List<String>> listYear() {
         return ResponseEntity.ok(vehicleService.listYears());
     }
+
+    @GetMapping("/brand/{brand}")
+    public ResponseEntity<Page<VehicleWithPhotosResponseBody>> displayByBrand(
+            @PathVariable String brand, Pageable pageable,
+            UriComponentsBuilder uriComponentsBuilder) {
+        return ResponseEntity.ok(vehicleService.listByBrand(brand,pageable, uriComponentsBuilder));
+    }
 }

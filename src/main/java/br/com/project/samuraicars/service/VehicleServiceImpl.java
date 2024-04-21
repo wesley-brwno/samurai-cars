@@ -83,6 +83,13 @@ public class VehicleServiceImpl implements VehicleService {
         return vehicleRepository.findAllYears().stream().distinct().toList();
     }
 
+    @Override
+    public Page<VehicleWithPhotosResponseBody> listByBrand(String brand, Pageable pageable, UriComponentsBuilder uriBuilder) {
+        Page<Vehicle> vehiclePage = vehicleRepository.findByBrandContaining(brand, pageable);
+        System.err.println(vehiclePage.isEmpty());
+        return vehiclePage.map(vehicle -> createVehicleWithPhotosResponseBody(vehicle, uriBuilder));
+    }
+
     private Vehicle findById(Long id) {
         return vehicleRepository.findById(id).orElseThrow(() -> new BadRequestException("Vehicle not found!"));
     }

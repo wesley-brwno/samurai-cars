@@ -19,6 +19,7 @@ public interface VehicleService {
     VehicleWithPhotosResponseBody listById(Long vehicleId, UriComponentsBuilder uriComponentsBuilder);
     Page<VehicleWithPhotosResponseBody> listAll(Pageable pageable, UriComponentsBuilder uriComponentsBuilder);
     List<VehicleWithPhotosResponseBody> listByUser(User user, UriComponentsBuilder uriComponentsBuilder);
+    Page<VehicleWithPhotosResponseBody> listByBrand(String brand, Pageable pageable, UriComponentsBuilder uriComponentsBuilder);
     List<String> listBrand();
     List<String> listYears();
 }
