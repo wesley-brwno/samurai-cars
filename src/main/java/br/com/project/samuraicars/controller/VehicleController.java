@@ -105,4 +105,11 @@ public class VehicleController {
             UriComponentsBuilder uriComponentsBuilder) {
         return ResponseEntity.ok(vehicleService.listByYear(year, pageable, uriComponentsBuilder));
     }
+
+    @GetMapping(value = "/search", params = "name")
+    public ResponseEntity<Page<VehicleWithPhotosResponseBody>> searchByName(
+            @RequestParam String name, @PageableDefault(sort = "name") Pageable pageable,
+            UriComponentsBuilder uriComponentsBuilder) {
+        return ResponseEntity.ok(vehicleService.searchByName(name, pageable, uriComponentsBuilder));
+    }
 }

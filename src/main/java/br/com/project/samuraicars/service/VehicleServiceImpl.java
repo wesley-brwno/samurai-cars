@@ -95,6 +95,12 @@ public class VehicleServiceImpl implements VehicleService {
         return vehiclePage.map(vehicle -> createVehicleWithPhotosResponseBody(vehicle, uriBuilder));
     }
 
+    @Override
+    public Page<VehicleWithPhotosResponseBody> searchByName(String name, Pageable pageable, UriComponentsBuilder uriBuilder) {
+        Page<Vehicle> vehiclePage = vehicleRepository.findByNameContainingIgnoreCase(name, pageable);
+        return vehiclePage.map(vehicle -> createVehicleWithPhotosResponseBody(vehicle, uriBuilder));
+    }
+
     private Vehicle findById(Long id) {
         return vehicleRepository.findById(id).orElseThrow(() -> new BadRequestException("Vehicle not found!"));
     }
