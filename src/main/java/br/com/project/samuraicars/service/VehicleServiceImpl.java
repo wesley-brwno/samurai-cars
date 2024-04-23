@@ -84,6 +84,11 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
+    public List<String> listSellers() {
+        return vehicleRepository.findAllUserName();
+    }
+
+    @Override
     public Page<VehicleWithPhotosResponseBody> listByBrand(String brand, Pageable pageable, UriComponentsBuilder uriBuilder) {
         Page<Vehicle> vehiclePage = vehicleRepository.findByBrandContaining(brand, pageable);
         return vehiclePage.map(vehicle -> createVehicleWithPhotosResponseBody(vehicle, uriBuilder));

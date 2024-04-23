@@ -24,4 +24,5 @@ public interface VehicleService {
     Page<VehicleWithPhotosResponseBody> searchByName(String name, Pageable pageable, UriComponentsBuilder uriComponentsBuilder);
     List<String> listBrand();
     List<String> listYears();
+    List<String> listSellers();
 }

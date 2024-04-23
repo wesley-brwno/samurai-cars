@@ -92,6 +92,11 @@ public class VehicleController {
         return ResponseEntity.ok(vehicleService.listYears());
     }
 
+    @GetMapping("/seller")
+    public ResponseEntity<List<String>> listSeller() {
+        return ResponseEntity.ok(vehicleService.listSellers());
+    }
+
     @GetMapping("/brand/{brand}")
     public ResponseEntity<Page<VehicleWithPhotosResponseBody>> displayByBrand(
             @PathVariable String brand, Pageable pageable,
