@@ -21,4 +21,5 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     Page<Vehicle> findByBrandContaining(String brand, Pageable pageable);
     Page<Vehicle> findByYearIs(Long year, Pageable pageable);
     Page<Vehicle> findByNameContainingIgnoreCase(String name, Pageable pageable);
+    Page<Vehicle> findByUserName(String name, Pageable pageable);
 }

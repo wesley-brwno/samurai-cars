@@ -101,6 +101,12 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
+    public Page<VehicleWithPhotosResponseBody> listBySellerName(String seller, Pageable pageable, UriComponentsBuilder builder) {
+        Page<Vehicle> vehiclePage = vehicleRepository.findByUserName(seller, pageable);
+        return vehiclePage.map(vehicle -> createVehicleWithPhotosResponseBody(vehicle, builder));
+    }
+
+    @Override
     public Page<VehicleWithPhotosResponseBody> searchByName(String name, Pageable pageable, UriComponentsBuilder uriBuilder) {
         Page<Vehicle> vehiclePage = vehicleRepository.findByNameContainingIgnoreCase(name, pageable);
         return vehiclePage.map(vehicle -> createVehicleWithPhotosResponseBody(vehicle, uriBuilder));
