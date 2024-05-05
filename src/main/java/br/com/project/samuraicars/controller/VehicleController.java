@@ -99,28 +99,28 @@ public class VehicleController {
 
     @GetMapping("/brand/{brand}")
     public ResponseEntity<Page<VehicleWithPhotosResponseBody>> displayByBrand(
-            @PathVariable String brand, Pageable pageable,
+            @PathVariable String brand, @PageableDefault(size = 10, sort = "name") Pageable pageable,
             UriComponentsBuilder uriComponentsBuilder) {
         return ResponseEntity.ok(vehicleService.listByBrand(brand,pageable, uriComponentsBuilder));
     }
 
     @GetMapping("/year/{year}")
     public ResponseEntity<Page<VehicleWithPhotosResponseBody>> displayByYear(
-            @PathVariable Long year, Pageable pageable,
+            @PathVariable Long year, @PageableDefault(size = 10, sort = "name") Pageable pageable,
             UriComponentsBuilder uriComponentsBuilder) {
         return ResponseEntity.ok(vehicleService.listByYear(year, pageable, uriComponentsBuilder));
     }
 
     @GetMapping("/seller/{seller}")
     public ResponseEntity<Page<VehicleWithPhotosResponseBody>> displayBySeller(
-            @PathVariable String seller, Pageable pageable,
+            @PathVariable String seller, @PageableDefault(size = 10, sort = "name") Pageable pageable,
             UriComponentsBuilder uriComponentsBuilder) {
         return ResponseEntity.ok(vehicleService.listBySellerName(seller, pageable, uriComponentsBuilder));
     }
 
     @GetMapping(value = "/search", params = "name")
     public ResponseEntity<Page<VehicleWithPhotosResponseBody>> searchByName(
-            @RequestParam String name, @PageableDefault(sort = "name") Pageable pageable,
+            @RequestParam String name, @PageableDefault(size = 10, sort = "name") Pageable pageable,
             UriComponentsBuilder uriComponentsBuilder) {
         return ResponseEntity.ok(vehicleService.searchByName(name, pageable, uriComponentsBuilder));
     }
