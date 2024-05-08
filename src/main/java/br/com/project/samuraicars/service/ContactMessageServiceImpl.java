@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ContactMessageServiceImpl implements ContactMessageService {
     private final ContactMessageRepository contactMessageRepository;
     private final VehicleRepository vehicleRepository;
-    private final UserService userService;
 
     @Override
     @Transactional
@@ -31,24 +30,15 @@ public class ContactMessageServiceImpl implements ContactMessageService {
     @Override
     @Transactional
     public void delete(Long id, UserDetails userDetails) {
-        ContactMessage message = findMessageById(id);
-        if (userService.isUserOwnerOfResource(userDetails, findVehicleById(message.getVehicleId()))) {
-            contactMessageRepository.delete(message);
-        } else {
-            throw new BadRequestException("Error deleting message");
-        }
+        ContactMessage message = findMessageByIdAndUser(id, (User) userDetails);
+        contactMessageRepository.delete(message);
     }
 
     @Override
     public ContactMessageResponseBody listById(Long id, UserDetails userDetails) {
-        ContactMessage message = findMessageById(id);
-        if (userService.isUserOwnerOfResource(userDetails, findVehicleById(message.getVehicleId()))) {
-            if (!message.isRead()) {
-                markMessageAsRead(message);
-            }
-            return mapEntityToContactMessageResponseBody(message);
-        }
-        throw new BadRequestException("Bad Request, this user can't access this message");
+        ContactMessage message = findMessageByIdAndUser(id, (User) userDetails);
+        markMessageAsRead(message);
+        return mapEntityToContactMessageResponseBody(message);
     }
 
     @Override
@@ -85,8 +75,8 @@ public class ContactMessageServiceImpl implements ContactMessageService {
         );
     }
 
-    private ContactMessage findMessageById(Long id) {
-        return contactMessageRepository.findById(id).orElseThrow(() -> new BadRequestException("Message not found"));
+    private ContactMessage findMessageByIdAndUser(Long id, User user) {
+        return contactMessageRepository.findByIdAndUser(id, user).orElseThrow(() -> new BadRequestException("Message not found"));
     }
 
     private Vehicle findVehicleById(Long id) {
