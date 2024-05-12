@@ -6,20 +6,20 @@ Com ela, vendedores podem cadastrar seus veículos, e compradores podem encontr�
 ## Como Executar
 
 ### Execução via deploy
-- A API está disponível no seguinte link: [https://samurai-cars.onrender.com](https://samurai-cars.onrender.com)
-- O Swagger pode ser visualizado em [https://samurai-cars.onrender.com/swagger-ui/index.html#/](https://samurai-cars.onrender.com/swagger-ui/index.html#/).
+- A API está disponível no seguinte link: [https://samurai-cars.onrender.com/api/v2](https://samurai-cars.onrender.com/api/v2)
+- O Swagger pode ser visualizado em [https://samurai-cars.onrender.com/api/v2/swagger-ui/index.html#/](https://samurai-cars.onrender.com/api/v2/swagger-ui/index.html#/).
 
 ### Execução com Docker
 - Baixe a imagem :
 ```
-docker pull brwnus/samurai_cars:1.0 
+docker pull brwnus/samurai_cars:v2.0
 ```
 - Execute a imagem
 ```
-docker run -p 8080:8080 brwnus/samurai_cars:1.0
+docker run -p 8080:8080 brwnus/samurai_cars:v2.0
 ```
-- A API pode ser acessada em [localhost:8080](http://localhost:8080).
-- O Swagger pode ser visualizado em [localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html).
+- A API pode ser acessada em [localhost:8080](http://localhost:8080/api/v2).
+- O Swagger pode ser visualizado em [localhost:8080/swagger-ui.html](http://localhost:8080/api/v2/swagger-ui.html).
 
 ## Instruções para fazer login
 
